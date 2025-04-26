@@ -8,6 +8,9 @@ MAKE_TASKS=5
 
 CROSS_INST=/opt/cross-irix-o32-gcc
 
+GCC_VERSION=15.1.0
+BINUTILS_VERSION=2.19.1
+
 error() {
     shift
     echo "ERROR: $@"
@@ -19,14 +22,14 @@ tar xf files/dev.tar.gz -C ${CROSS_INST}/sysroot || error "Unpack sysroot"
 
 mkdir tmp
 cd tmp
-test -f binutils-2.19.1.tar.bz2 ||  wget https://ftp.gnu.org/gnu/binutils/binutils-2.19.1.tar.bz2 || error "Can't download binutils"
-test -f gcc-14.2.0.tar.xz || wget https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.xz || error "Can't download gcc"
-tar xf binutils-2.19.1.tar.bz2 || error "Unpacking binutils"
-tar xf gcc-14.2.0.tar.xz || error "Unpacking gcc"
+test -f binutils-${BINUTILS_VERSION}.tar.bz2 ||  wget https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2 || error "Can't download binutils"
+test -f gcc-${GCC_VERSION}.tar.xz || wget https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz || error "Can't download gcc"
+tar xf binutils-${BINUTILS_VERSION}.tar.bz2 || error "Unpacking binutils"
+tar xf gcc-${GCC_VERSION}.tar.xz || error "Unpacking gcc"
 
-cd binutils-2.19.1
+cd binutils-${BINUTILS_VERSION}
 
-patch -p1 < ${TOPDIR}/files/binutils-2.19.1-irix.diff || error "Patch binutils"
+patch -p1 < ${TOPDIR}/files/binutils-${BINUTILS_VERSION}-irix.diff || error "Patch binutils"
 
 mkdir -p build-cross build
 
@@ -43,7 +46,7 @@ strip ${CROSS_INST}/mips-sgi-irix5/bin/* || true
 
 cd ../..
 
-cd gcc-14.2.0
+cd gcc-${GCC_VERSION}
 
 ./contrib/download_prerequisites || error "Download gcc prerequisites"
 
@@ -54,7 +57,7 @@ patch -p1 < ${TOPDIR}/files/gmp-6.2.1-new.diff || error "Patching gmp"
 cd ../isl
 patch -p1 < ${TOPDIR}/files/isl-0.24-new.diff || error "Patching isl"
 cd ..
-patch -p1 < ${TOPDIR}/files/gcc-14.2.0-irix.diff || error "Patching gcc"
+patch -p1 < ${TOPDIR}/files/gcc-${GCC_VERSION}-irix.diff || error "Patching gcc"
 
 mkdir -p build-cross build
 

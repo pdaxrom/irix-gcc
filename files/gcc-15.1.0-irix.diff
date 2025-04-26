@@ -1,0 +1,3538 @@
+diff -Nur gcc-15.1.0/c++tools/server.cc gcc-15.1.0-irix/c++tools/server.cc
+--- gcc-15.1.0/c++tools/server.cc	2025-04-25 08:17:59.000000000 +0000
++++ gcc-15.1.0-irix/c++tools/server.cc	2025-04-26 06:25:08.485852520 +0000
+@@ -36,6 +36,9 @@
+ #include <sys/stat.h>
+ #include <fcntl.h>
+ 
++#undef HAVE_AF_UNIX
++#undef HAVE_AF_INET6
++
+ // Network
+ /* Include network stuff first.  Excitingly OSX10.14 uses bcmp here, which
+    we poison later!  */
+diff -Nur gcc-15.1.0/fixincludes/server.c gcc-15.1.0-irix/fixincludes/server.c
+--- gcc-15.1.0/fixincludes/server.c	2025-04-25 08:17:59.000000000 +0000
++++ gcc-15.1.0-irix/fixincludes/server.c	2025-04-26 06:55:05.651627843 +0000
+@@ -155,8 +155,13 @@
+  *  to our server, and also that if the server dies, we do not
+  *  die from a sigpipe problem.
+  */
++#if sgi
++static void
++sig_handler (void)
++#else
+ static void
+ sig_handler (int signo ATTRIBUTE_UNUSED)
++#endif
+ {
+ #ifdef DEBUG
+   /* FIXME: this is illegal to do in a signal handler.  */
+diff -Nur gcc-15.1.0/gcc/config/mips/iris.h gcc-15.1.0-irix/gcc/config/mips/iris.h
+--- gcc-15.1.0/gcc/config/mips/iris.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris.h	2025-04-26 06:25:08.485852520 +0000
+@@ -0,0 +1,239 @@
++/* Definitions of target machine for GNU compiler.  Generic IRIX version.
++   Copyright (C) 1993, 1995, 1996, 1998, 2000,
++   2001, 2002, 2003, 2004, 2007, 2008, 2009, 2010
++   Free Software Foundation, Inc.
++
++This file is part of GCC.
++
++GCC is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 3, or (at your option)
++any later version.
++
++GCC is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with GCC; see the file COPYING3.  If not see
++<http://www.gnu.org/licenses/>.  */
++
++/* We are compiling for IRIX now.  */
++#undef TARGET_IRIX
++#define TARGET_IRIX 1
++
++/* MIPS specific debugging info */
++/*#define MIPS_DEBUGGING_INFO 1 */
++
++/* The size in bytes of a DWARF field indicating an offset or length
++   relative to a debug info section, specified to be 4 bytes in the DWARF-2
++   specification.  The SGI/MIPS ABI defines it to be the same as PTR_SIZE.  */
++#define DWARF_OFFSET_SIZE PTR_SIZE
++
++/* The size in bytes of the initial length field in a debug info
++   section.  The DWARF 3 (draft) specification defines this to be
++   either 4 or 12 (with a 4-byte "escape" word when it's 12), but the
++   SGI/MIPS ABI predates this standard and defines it to be the same
++   as DWARF_OFFSET_SIZE.  */
++#define DWARF_INITIAL_LENGTH_SIZE DWARF_OFFSET_SIZE
++
++/* MIPS assemblers don't have the usual .set foo,bar construct;
++   .set is used for assembler options instead.  */
++#undef SET_ASM_OP
++#define ASM_OUTPUT_DEF(FILE, LABEL1, LABEL2)			\
++  do								\
++    {								\
++      fputc ('\t', FILE);					\
++      assemble_name (FILE, LABEL1);				\
++      fputs (" = ", FILE);					\
++      assemble_name (FILE, LABEL2);				\
++      fputc ('\n', FILE);					\
++    }								\
++  while (0)
++
++/* The MIPSpro o32 linker warns about not linking .comment sections.  */
++/* #undef IDENT_ASM_OP */
++
++#undef LOCAL_LABEL_PREFIX
++#define LOCAL_LABEL_PREFIX (TARGET_NEWABI ? "." : "$")
++
++#undef ASM_DECLARE_OBJECT_NAME
++#define ASM_DECLARE_OBJECT_NAME mips_declare_object_name
++
++#undef ASM_FINISH_DECLARE_OBJECT
++#define ASM_FINISH_DECLARE_OBJECT mips_finish_declare_object
++
++/* Specify wchar_t types.  */
++#undef WCHAR_TYPE
++#define WCHAR_TYPE (Pmode == DImode ? "int" : "long int")
++
++#undef WCHAR_TYPE_SIZE
++#define WCHAR_TYPE_SIZE INT_TYPE_SIZE
++
++/* Same for wint_t.  */
++#undef WINT_TYPE
++#define WINT_TYPE (Pmode == DImode ? "int" : "long int")
++
++#undef WINT_TYPE_SIZE
++#define WINT_TYPE_SIZE 32
++
++/* C99 stdint.h types.  */
++#define INT8_TYPE "signed char"
++#define INT16_TYPE "short int"
++#define INT32_TYPE "int"
++#define INT64_TYPE "long long int"
++#define UINT8_TYPE "unsigned char"
++#define UINT16_TYPE "short unsigned int"
++#define UINT32_TYPE "unsigned int"
++#define UINT64_TYPE "long long unsigned int"
++
++#define INT_LEAST8_TYPE "signed char"
++#define INT_LEAST16_TYPE "short int"
++#define INT_LEAST32_TYPE "int"
++#define INT_LEAST64_TYPE "long long int"
++#define UINT_LEAST8_TYPE "unsigned char"
++#define UINT_LEAST16_TYPE "short unsigned int"
++#define UINT_LEAST32_TYPE "unsigned int"
++#define UINT_LEAST64_TYPE "long long unsigned int"
++
++#define INT_FAST8_TYPE "signed char"
++#define INT_FAST16_TYPE "short int"
++#define INT_FAST32_TYPE "int"
++#define INT_FAST64_TYPE "long long int"
++#define UINT_FAST8_TYPE "unsigned char"
++#define UINT_FAST16_TYPE "short unsigned int"
++#define UINT_FAST32_TYPE "unsigned int"
++#define UINT_FAST64_TYPE "long long unsigned int"
++
++#define INTMAX_TYPE "long long int"
++#define UINTMAX_TYPE "long long unsigned int"
++
++#define INTPTR_TYPE "long int"
++#define UINTPTR_TYPE "long unsigned int"
++
++#define SIG_ATOMIC_TYPE "int"
++
++/* Plain char is unsigned in the SGI compiler.  */
++#undef DEFAULT_SIGNED_CHAR
++#define DEFAULT_SIGNED_CHAR 0
++
++/*
++#define WORD_SWITCH_TAKES_ARG(STR)			\
++  (DEFAULT_WORD_SWITCH_TAKES_ARG (STR)			\
++   || strcmp (STR, "rpath") == 0)
++ */
++
++#define TARGET_OS_CPP_BUILTINS()				\
++  do								\
++    {								\
++      builtin_define_std ("host_mips");				\
++      builtin_define_std ("sgi");				\
++      builtin_define_std ("unix");				\
++      builtin_define_std ("SYSTYPE_SVR4");			\
++      builtin_define ("_MODERN_C");				\
++      builtin_define ("_SVR4_SOURCE");				\
++      builtin_define ("__DSO__");				\
++      builtin_assert ("system=unix");				\
++      builtin_assert ("system=svr4");				\
++      builtin_assert ("machine=sgi");				\
++								\
++      if (!ISA_MIPS1 && !ISA_MIPS2)				\
++	builtin_define ("_COMPILER_VERSION=601");		\
++								\
++      /* We must always define _LONGLONG, even when -ansi is	\
++	 used, because IRIX 5 system header files require it.	\
++	 This is OK, because gcc never warns when long long	\
++	 is used in system header files.			\
++								\
++	 An alternative would be to support the SGI builtin	\
++	 type __long_long.  */					\
++      builtin_define ("_LONGLONG");				\
++								\
++      /* IRIX 6.5.18 and above provide many ISO C99		\
++	 features protected by the __c99 macro.			\
++	 libstdc++ v3 needs them as well.  */			\
++      if (TARGET_IRIX6)						\
++	if (flag_isoc99 || c_dialect_cxx ())			\
++	  builtin_define ("__c99");				\
++								\
++      /* The GNU C++ standard library requires that		\
++	 __EXTENSIONS__ and _SGI_SOURCE be defined on at	\
++	 least IRIX 6.2 and probably all IRIX 6 prior to 6.5.	\
++	 We don't need this on IRIX 6.5 itself, but it		\
++	 shouldn't hurt other than the namespace pollution.  */	\
++      if (!flag_iso || (TARGET_IRIX6 && c_dialect_cxx ()))	\
++	{							\
++	  builtin_define ("__EXTENSIONS__");			\
++	  builtin_define ("_SGI_SOURCE");			\
++	}							\
++    }								\
++  while (0)
++
++#undef SUBTARGET_CC1_SPEC
++#define SUBTARGET_CC1_SPEC "%{static: -mno-abicalls}"
++
++#undef INIT_SECTION_ASM_OP
++#define INIT_SECTION_ASM_OP "\t.section\t.gcc_init,\"ax\",@progbits"
++
++#undef FINI_SECTION_ASM_OP
++#define FINI_SECTION_ASM_OP "\t.section\t.gcc_fini,\"ax\",@progbits"
++
++#ifdef IRIX_USING_GNU_LD
++#define IRIX_NO_UNRESOLVED ""
++#else
++#define IRIX_NO_UNRESOLVED "-no_unresolved"
++#endif
++
++#ifdef IRIX_USING_GNU_LD
++#define SUBTARGET_DONT_WARN_UNUSED_SPEC ""
++#define SUBTARGET_WARN_UNUSED_SPEC ""
++#else
++#define SUBTARGET_DONT_WARN_UNUSED_SPEC "-dont_warn_unused"
++#define SUBTARGET_WARN_UNUSED_SPEC "-warn_unused"
++#endif
++
++/* Generic part of the LINK_SPEC.  */
++#undef LINK_SPEC
++#define LINK_SPEC "\
++%{G*} %{EB} %{EL} %{mips1} %{mips2} %{mips3} %{mips4} \
++%{bestGnum} %{shared} %{non_shared} \
++%{call_shared} %{no_archive} %{exact_version} \
++%{!shared: \
++  %{!non_shared: %{!call_shared:%{!r: -call_shared " IRIX_NO_UNRESOLVED "}}}} \
++%{rpath} %{!r: -init __gcc_init -fini __gcc_fini} " IRIX_SUBTARGET_LINK_SPEC
++
++/* A linker error can empirically be avoided by removing duplicate
++   library search directories.  */
++/* #define LINK_ELIMINATE_DUPLICATE_LDIRECTORIES 1 */
++
++/* The SGI linker doesn't understand constructor priorities.  */
++#ifndef IRIX_USING_GNU_LD
++#define SUPPORTS_INIT_PRIORITY 0
++#endif
++
++/* Add -g to mips.h default to avoid confusing gas with local symbols
++   generated from stabs info.  */
++#undef NM_FLAGS
++#define NM_FLAGS "-Bng"
++
++/* The system header files are C++ aware.  */
++/* ??? Unfortunately, most but not all of the headers are C++ aware.
++   Specifically, curses.h is not, and as a consequence, defining this
++   used to prevent libg++ building.  This is no longer the case so
++   define it again to prevent other problems, e.g. with getopt in
++   unistd.h.  We still need some way to fix just those files that need
++   fixing.  */
++/* #define NO_IMPLICIT_EXTERN_C 1 */
++
++/* -G is incompatible with -KPIC which is the default, so only allow objects
++   in the small data section if the user explicitly asks for it.  */
++#undef MIPS_DEFAULT_GVALUE
++#define MIPS_DEFAULT_GVALUE 0
++
++/* The native o32 IRIX linker does not support merging without a
++   special elspec(5) file.  */
++#ifndef IRIX_USING_GNU_LD
++#undef HAVE_GAS_SHF_MERGE
++#define HAVE_GAS_SHF_MERGE 0
++#endif
+diff -Nur gcc-15.1.0/gcc/config/mips/iris5.h gcc-15.1.0-irix/gcc/config/mips/iris5.h
+--- gcc-15.1.0/gcc/config/mips/iris5.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris5.h	2025-04-26 06:25:08.485852520 +0000
+@@ -0,0 +1,56 @@
++/* Definitions of target machine for GNU compiler.  IRIX version 5.
++   Copyright (C) 1993, 1995, 1996, 1998, 2000,
++   2001, 2002, 2003, 2004, 2007, 2010 Free Software Foundation, Inc.
++
++This file is part of GCC.
++
++GCC is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 3, or (at your option)
++any later version.
++
++GCC is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with GCC; see the file COPYING3.  If not see
++<http://www.gnu.org/licenses/>.  */
++
++#ifdef IRIX_USING_GNU_LD
++#define IRIX_SUBTARGET_LINK_SPEC "-melf32bsmip"
++#else
++#define IRIX_SUBTARGET_LINK_SPEC "-_SYSTYPE_SVR4"
++#endif
++
++#undef DRIVER_SELF_SPECS
++#define DRIVER_SELF_SPECS 			\
++  "%{!mabi=*: -mabi=32}", 			\
++  "%{mabi=32: %{!mips*: %{!march*: -mips2}}}", 	\
++  /* Configuration-independent MIPS rules.  */	\
++  BASE_DRIVER_SELF_SPECS
++
++#undef STARTFILE_SPEC
++#define STARTFILE_SPEC "\
++%{!static: \
++  %{!shared:%{pg:gcrt1.o%s}%{!pg:%{p:mcrt1.o%s libprof1.a%s}%{!p:crt1.o%s}}}} \
++%{static: \
++  %{pg:gcrt1.o%s} \
++  %{!pg:%{p:/usr/lib/nonshared/mcrt1.o%s libprof1.a%s} \
++  %{!p:/usr/lib/nonshared/crt1.o%s}}} \
++irix-crti.o%s crtbegin.o%s"
++
++#undef LIB_SPEC
++#define LIB_SPEC "%{!shared:%{p:-lprof1} %{pg:-lprof1} -lc}"
++
++/* Avoid getting two warnings for libgcc.a everytime we link. */
++#undef LIBGCC_SPEC
++#define LIBGCC_SPEC \
++  SUBTARGET_DONT_WARN_UNUSED_SPEC " -lgcc " SUBTARGET_WARN_UNUSED_SPEC
++
++#undef ENDFILE_SPEC
++#define ENDFILE_SPEC "crtend.o%s irix-crtn.o%s %{!shared:crtn.o%s}"
++
++/*#undef MACHINE_TYPE */
++/*#define MACHINE_TYPE "SGI running IRIX 5.x" */
+diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix/gcc/config/mips/iris6.h
+--- gcc-15.1.0/gcc/config/mips/iris6.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris6.h	2025-04-26 06:25:08.485852520 +0000
+@@ -0,0 +1,137 @@
++/* Definitions of target machine for GNU compiler.  IRIX version 6.
++   Copyright (C) 1994, 1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004,
++   2005, 2006, 2007, 2008, 2010
++   Free Software Foundation, Inc.
++
++This file is part of GCC.
++
++GCC is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 3, or (at your option)
++any later version.
++
++GCC is distributed in the hope that it will be useful,
++but WITHOUT ANY WARRANTY; without even the implied warranty of
++MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++GNU General Public License for more details.
++
++You should have received a copy of the GNU General Public License
++along with GCC; see the file COPYING3.  If not see
++<http://www.gnu.org/licenses/>.  */
++
++/* Allow some special handling for IRIX 6.  */
++#undef TARGET_IRIX6
++#define TARGET_IRIX6 1
++
++/* Default to -mabi=n32 and -mips3.  */
++#undef MULTILIB_DEFAULTS
++#define MULTILIB_DEFAULTS { "mabi=n32" }
++
++/* Force the default ABI onto the command line in order to make the specs
++   easier to write.  Default to the mips2 ISA for the O32 ABI.  */
++#undef DRIVER_SELF_SPECS
++#define DRIVER_SELF_SPECS 			\
++  "%{!mabi=*: -mabi=n32}", 			\
++  "%{mabi=32: %{!mips*: %{!march*: -mips2}}}", 	\
++  /* Configuration-independent MIPS rules.  */	\
++  BASE_DRIVER_SELF_SPECS
++
++/* Force the generation of dwarf .debug_frame sections even if not
++   compiling -g.  This guarantees that we can unwind the stack.  */
++#define DWARF2_FRAME_INFO 1
++
++/* The system unwinder in libexc requires a specific dwarf return address
++   column to work.  */
++#undef  DWARF_FRAME_RETURN_COLUMN
++#define DWARF_FRAME_RETURN_COLUMN (FP_REG_LAST + 1)
++
++#undef MACHINE_TYPE
++#define MACHINE_TYPE "SGI running IRIX 6.x"
++
++#ifdef IRIX_USING_GNU_LD
++#define IRIX_SUBTARGET_LINK_SPEC \
++  "%{mabi=32: -melf32bsmip}%{mabi=n32: -melf32bmipn32}%{mabi=64: -melf64bmip}"
++#else
++  /* Explicitly hide crt symbols that would normally be marked with
++     a "hidden" visibility attribute.
++     
++     We have traditionally disabled this attribute when using the
++     native linker because the native linker's visibility support is
++     not fully-compatible with the GNU linker's.  In particular, the
++     native linker does not pull in archive objects purely to resolve
++     references to the object's hidden symbols, whereas the GNU
++     linker does.
++     
++     The gcc build system currently hides symbols in some static
++     libraries (typically libgcov.a or libgcc.a) whenever visibility
++     attributes are supported.  On targets with GNU semantics, this
++     makes sure that uses of libx.so symbols in one dynamic object are
++     not resolved to libx.a symbols in another dynamic object.  But
++     on targets with IRIX semantics, hiding the symbols prevents the
++     static archive from working at all.
++     
++     It would probably be better to enable visiblity attributes for
++     IRIX ld and disable the static archives versioning.  It shouldn't
++     make anything worse, since libx.a symbols are global by default
++     anyway.  However, no-one has volunteered to do this yet.  */
++
++#define IRIX_SUBTARGET_LINK_SPEC \
++  "%{w} -_SYSTYPE_SVR4 -woff 131 \
++   %{shared:-hidden_symbol __dso_handle} \
++   %{mabi=32: -32}%{mabi=n32: -n32}%{mabi=64: -64}%{!mabi*: -n32}"
++#endif
++
++/* Profiling is supported via libprof1.a not -lc_p as in IRIX 3.  */
++#undef STARTFILE_SPEC
++#define STARTFILE_SPEC \
++  "%{!shared: \
++     %{mabi=32:%{pg:gcrt1.o%s} \
++       %{!pg:%{p:mcrt1.o%s libprof1.a%s}%{!p:crt1.o%s}}} \
++     %{mabi=n32: \
++       %{mips4:%{pg:/usr/lib32/mips4/gcrt1.o%s} \
++         %{!pg:%{p:/usr/lib32/mips4/mcrt1.o%s /usr/lib32/mips4/libprof1.a%s} \
++           %{!p:/usr/lib32/mips4/crt1.o%s}}} \
++       %{!mips4:%{pg:/usr/lib32/mips3/gcrt1.o%s} \
++         %{!pg:%{p:/usr/lib32/mips3/mcrt1.o%s /usr/lib32/mips3/libprof1.a%s} \
++           %{!p:/usr/lib32/mips3/crt1.o%s}}}} \
++     %{mabi=64: \
++       %{mips4:%{pg:/usr/lib64/mips4/gcrt1.o} \
++         %{!pg:%{p:/usr/lib64/mips4/mcrt1.o /usr/lib64/mips4/libprof1.a} \
++           %{!p:/usr/lib64/mips4/crt1.o}}} \
++       %{!mips4:%{pg:/usr/lib64/mips3/gcrt1.o} \
++         %{!pg:%{p:/usr/lib64/mips3/mcrt1.o /usr/lib64/mips3/libprof1.a} \
++           %{!p:/usr/lib64/mips3/crt1.o}}}}} \
++  irix-crti.o%s crtbegin.o%s"
++
++#undef LIB_SPEC
++#define LIB_SPEC \
++  "%{mabi=n32: %{mips4:-L/usr/lib32/mips4} %{!mips4:-L/usr/lib32/mips3} \
++     -L/usr/lib32} \
++   %{mabi=64: %{mips4:-L/usr/lib64/mips4} %{!mips4:-L/usr/lib64/mips3} \
++     -L/usr/lib64} \
++   %{!shared:" \
++     SUBTARGET_DONT_WARN_UNUSED_SPEC \
++     " %{pthread:-lpthread} %{p:libprof1.a%s}%{pg:libprof1.a%s} -lc " \
++     SUBTARGET_WARN_UNUSED_SPEC "}"
++
++/* Avoid getting two warnings for libgcc.a everytime we link.  libgcc.a
++   contains references to copysignl, so link with libm to resolve them.  */
++#undef LIBGCC_SPEC
++#define LIBGCC_SPEC \
++  SUBTARGET_DONT_WARN_UNUSED_SPEC " -lgcc -lm " SUBTARGET_WARN_UNUSED_SPEC
++
++#undef ENDFILE_SPEC
++#define ENDFILE_SPEC \
++  "crtend.o%s irix-crtn.o%s \
++   %{!shared: \
++     %{mabi=32:crtn.o%s}\
++     %{mabi=n32:%{mips4:/usr/lib32/mips4/crtn.o%s}\
++       %{!mips4:/usr/lib32/mips3/crtn.o%s}}\
++     %{mabi=64:%{mips4:/usr/lib64/mips4/crtn.o%s}\
++       %{!mips4:/usr/lib64/mips3/crtn.o%s}}}"
++
++#define MIPS_TFMODE_FORMAT mips_extended_format
++
++#undef SUBTARGET_CPP_SPEC
++#define SUBTARGET_CPP_SPEC "%{pthread:-D_REENTRANT}"
++
+diff -Nur gcc-15.1.0/gcc/config/mips/mips.cc gcc-15.1.0-irix/gcc/config/mips/mips.cc
+--- gcc-15.1.0/gcc/config/mips/mips.cc	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/mips.cc	2025-04-26 06:25:08.487852730 +0000
+@@ -916,7 +916,7 @@
+ 		     6            /* memory_latency */
+   },
+   { /* R4000 */
+-     COSTS_N_INSNS (6),           /* fp_add */
++     COSTS_N_INSNS (4),           /* fp_add */
+      COSTS_N_INSNS (7),           /* fp_mult_sf */
+      COSTS_N_INSNS (8),           /* fp_mult_df */
+      COSTS_N_INSNS (23),          /* fp_div_sf */
+@@ -7104,6 +7104,9 @@
+       layout_type (record);
+       return record;
+     }
++  else if (TARGET_IRIX && TARGET_IRIX6)
++    /* On IRIX 6, this type is 'char *'.  */
++    return build_pointer_type (char_type_node);
+   else
+     /* Otherwise, we use 'void *'.  */
+     return ptr_type_node;
+@@ -7497,7 +7500,9 @@
+       fputs ("\n", asm_out_file);
+     }
+ 
++#ifdef ASM_OUTPUT_TYPE_DIRECTIVE
+   ASM_OUTPUT_TYPE_DIRECTIVE (asm_out_file, name, "function");
++#endif
+ 
+   /* Start the definition proper.  */
+   ASM_OUTPUT_FUNCTION_LABEL (asm_out_file, name, decl);
+@@ -9887,6 +9892,19 @@
+ 	  fprintf (file, ", " HOST_WIDE_INT_PRINT_DEC "\n",
+ 		   int_size_in_bytes (TREE_TYPE (decl)));
+ 	}
++      else if (TARGET_IRIX
++	       && mips_abi == ABI_32
++	       && TREE_CODE (decl) == FUNCTION_DECL)
++	{
++	  /* In IRIX 5 or IRIX 6 for the O32 ABI, we must output a
++	     `.global name .text' directive for every used but
++	     undefined function.  If we don't, the linker may perform
++	     an optimization (skipping over the insns that set $gp)
++	     when it is unsafe.  */
++	  fputs ("\t.globl ", file);
++	  assemble_name (file, name);
++	  fputs (" .text\n", file);
++	}
+     }
+ }
+ 
+@@ -10165,7 +10183,7 @@
+     }
+   else
+     mips_declare_common_object (stream, name, "\n\t.comm\t",
+-				size, align, true);
++				size, align, false);
+ }
+ 
+ #ifdef ASM_OUTPUT_SIZE_DIRECTIVE
+@@ -10288,6 +10306,11 @@
+   default_file_start ();
+ 
+   /* Generate a special section to describe the ABI switches used to
++     produce the resultant binary.  This is unnecessary on IRIX and
++     causes unwanted warnings from the native linker.  */
++  if (!TARGET_IRIX)
++    {
++  /* Generate a special section to describe the ABI switches used to
+      produce the resultant binary.  */
+ 
+   /* Record the ABI itself.  Modern versions of binutils encode
+@@ -10295,16 +10318,18 @@
+      information in order to correctly debug binaries produced by
+      older binutils.  See the function mips_gdbarch_init in
+      gdb/mips-tdep.c.  */
+-  fprintf (asm_out_file, "\t.section .mdebug.%s\n\t.previous\n",
+-	   mips_mdebug_abi_name ());
++/*  fprintf (asm_out_file, "\t.section .mdebug.%s\n\t.previous\n",
++	   mips_mdebug_abi_name ()); */
+ 
+   /* There is no ELF header flag to distinguish long32 forms of the
+      EABI from long64 forms.  Emit a special section to help tools
+      such as GDB.  Do the same for o64, which is sometimes used with
+      -mlong64.  */
+-  if (mips_abi == ABI_EABI || mips_abi == ABI_O64)
++/*  if (mips_abi == ABI_EABI || mips_abi == ABI_O64)
+     fprintf (asm_out_file, "\t.section .gcc_compiled_long%d\n"
+-	     "\t.previous\n", TARGET_LONG64 ? 64 : 32);
++	     "\t.previous\n", TARGET_LONG64 ? 64 : 32); */
++
++    }
+ 
+   /* Record the NaN encoding.  */
+   if (HAVE_AS_NAN || mips_nan != MIPS_IEEE_754_DEFAULT)
+@@ -12246,6 +12271,10 @@
+   fnname = XSTR (XEXP (DECL_RTL (current_function_decl), 0), 0);
+   mips_start_function_definition (fnname, TARGET_MIPS16, current_function_decl);
+ 
++  /* Stop mips_file_end from treating this function as external.  */
++  if (TARGET_IRIX && mips_abi == ABI_32)
++    TREE_ASM_WRITTEN (DECL_NAME (cfun->decl)) = 1;
++
+   /* Output MIPS-specific frame information.  */
+   if (!flag_inhibit_size_directive)
+     {
+diff -Nur gcc-15.1.0/gcc/config/mips/mips.h gcc-15.1.0-irix/gcc/config/mips/mips.h
+--- gcc-15.1.0/gcc/config/mips/mips.h	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/mips.h	2025-04-26 06:25:08.487852730 +0000
+@@ -225,7 +225,9 @@
+ 
+ /* True if .gpword or .gpdword should be used for switch tables.  */
+ #define TARGET_GPWORD				\
+-  (TARGET_ABICALLS && !TARGET_ABSOLUTE_ABICALLS)
++  (TARGET_ABICALLS				\
++   && !TARGET_ABSOLUTE_ABICALLS			\
++   && !(mips_abi == ABI_64 && TARGET_IRIX))
+ 
+ /* True if the output must have a writable .eh_frame.
+    See ASM_PREFERRED_EH_DATA_FORMAT for details.  */
+@@ -415,6 +417,9 @@
+    those loads and stores follow it.  */
+ #define TARGET_SYNC_AFTER_SC (!TARGET_OCTEON && !TARGET_XLP)
+ 
++#define TARGET_IRIX	   0
++#define TARGET_IRIX6	   0
++
+ /* Define preprocessor macros for the -march and -mtune options.
+    PREFIX is either _MIPS_ARCH or _MIPS_TUNE, INFO is the selected
+    processor.  If INFO's canonical name is "foo", define PREFIX to
+@@ -441,7 +446,8 @@
+ #define TARGET_CPU_CPP_BUILTINS()					\
+   do									\
+     {									\
+-      builtin_assert ("machine=mips");                        		\
++      if (!TARGET_IRIX)                                         	\
++	builtin_assert ("machine=mips");                        	\
+       builtin_assert ("cpu=mips");					\
+       builtin_define ("__mips__");     					\
+       builtin_define ("_mips");						\
+@@ -459,6 +465,8 @@
+       if (TARGET_64BIT)							\
+ 	builtin_define ("__mips64");					\
+ 									\
++      if (!TARGET_IRIX)							\
++	{								\
+       /* Treat _R3000 and _R4000 like register-size			\
+ 	 defines, which is how they've historically			\
+ 	 been used.  */							\
+@@ -472,6 +480,7 @@
+ 	  builtin_define_std ("R3000");					\
+ 	  builtin_define ("_R3000");					\
+ 	}								\
++	}								\
+ 									\
+       if (TARGET_FLOAT64)						\
+ 	builtin_define ("__mips_fpr=64");				\
+@@ -1475,7 +1484,6 @@
+ %{mfix-24k} \
+ %{noasmopt:-O0; O0|fno-delayed-branch:-O1; O*:-O2; :-O1} \
+ %(subtarget_asm_debugging_spec) \
+-%{mabi=*} %{!mabi=*: %(asm_abi_default_spec)} \
+ %{mgp32} %{mgp64} %{march=*} %{mxgot:-xgot} \
+ %{mfp32} %{mfpxx} %{mfp64} %{mnan=*} \
+ %{modd-spreg} %{mno-odd-spreg} \
+diff -Nur gcc-15.1.0/gcc/config/mips/t-iris gcc-15.1.0-irix/gcc/config/mips/t-iris
+--- gcc-15.1.0/gcc/config/mips/t-iris	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/t-iris	2025-04-26 06:25:08.488852836 +0000
+@@ -0,0 +1,13 @@
++$(T)irix-crti.o: $(srcdir)/config/mips/irix-crti.asm $(GCC_PASSES)
++	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(MULTILIB_CFLAGS) $(INCLUDES) \
++	-c -o $@ -x assembler-with-cpp $<
++
++$(T)irix-crtn.o: $(srcdir)/config/mips/irix-crtn.asm $(GCC_PASSES)
++	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(MULTILIB_CFLAGS) $(INCLUDES) \
++	-c -o $@ -x assembler-with-cpp $<
++
++#undef  STARTFILE_SPEC
++#define STARTFILE_SPEC "irix-crti.asm crtbegin.s"
++
++#undef  ENDFILE_SPEC
++#define ENDFILE_SPEC "crtend.s irix-crtn.asm"
+diff -Nur gcc-15.1.0/gcc/config.gcc gcc-15.1.0-irix/gcc/config.gcc
+--- gcc-15.1.0/gcc/config.gcc	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/config.gcc	2025-04-26 06:25:08.488852836 +0000
+@@ -2612,6 +2612,45 @@
+ 	gcc_cv_initfini_array=yes
+ 	;;
+ 
++mips-sgi-irix[56]*)
++	tm_file="elfos.h ${tm_file} mips/iris.h"
++	tmake_file="mips/t-iris mips/t-slibgcc-irix"
++	target_cpu_default="MASK_ABICALLS"
++	case ${target} in
++	*-*-irix5*)
++		tm_file="${tm_file} mips/iris5.h"
++		use_gcc_stdint=provide
++		;;
++
++	*-*-irix6*)
++		tm_file="${tm_file} mips/iris6.h"
++		tmake_file="${tmake_file} mips/t-iris6"
++		tm_defines="${tm_defines} MIPS_ISA_DEFAULT=3 MIPS_ABI_DEFAULT=ABI_N32"
++		case ${target} in
++		*-*-irix6.[0-4]*)
++			use_gcc_stdint=provide
++			;;
++		*-*-irix6.5*)
++			# Only IRIX Development Foundation 1.3 for IRIX 6.5
++			# provides stdint.h.
++			use_gcc_stdint=wrap
++			;;
++		esac
++		;;
++	esac
++	if test "x$stabs" = xyes
++	then
++		tm_file="${tm_file} dbx.h"
++	fi
++	if test "x$gnu_ld" = xyes
++	then
++		tm_defines="${tm_defines} IRIX_USING_GNU_LD"
++	fi
++	case ${enable_threads}:${have_pthread_h} in
++	  "":yes | yes:yes ) thread_file=posix ;;
++	esac
++	;;
++
+ mips*-*-netbsd*)			# NetBSD/mips, either endian.
+ 	target_cpu_default="MASK_ABICALLS"
+ 	tm_file="elfos.h ${tm_file} mips/elf.h ${nbsd_tm_file} mips/netbsd.h"
+diff -Nur gcc-15.1.0/gcc/configure.ac gcc-15.1.0-irix/gcc/configure.ac
+--- gcc-15.1.0/gcc/configure.ac	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/configure.ac	2025-04-26 06:25:08.489852942 +0000
+@@ -974,7 +974,15 @@
+       ;;
+ 
+     mips*-*-*)
+-      enable_fixed_point=yes
++      case $host in
++	mips*-sgi-irix*)
++	  AC_MSG_WARN(fixed-point is not supported on IRIX, ignored)
++	  enable_fixed_point=no
++	  ;;
++	*)
++	  enable_fixed_point=yes
++	  ;;
++      esac
+       ;;
+     loongarch*-*-*)
+       enable_fixed_point=yes
+@@ -2089,7 +2097,7 @@
+     # default
+     target_thread_file='single'
+     ;;
+-  aix | dce | lynx | mipssde | posix | rtems | \
++  aix | dce | irix | lynx | mipssde | posix | rtems | \
+   single | tpf | vxworks | win32 | mcf)
+     target_thread_file=${enable_threads}
+     ;;
+@@ -4207,6 +4215,18 @@
+   [$tls_as_opt], [$conftest_s],,
+   [set_have_as_tls=yes])
+ fi
++case "$target" in
++  *-*-irix6*|*-*-irix5*)
++    # IRIX 6.5 rld and libc.so lack TLS support, so even if gas and gld
++    # with TLS support are in use, native TLS cannot work.
++    set_have_as_tls=no
++    ;;
++  *-*-osf*)
++    # Tru64 UNIX loader and libc.so lack TLS support, so even if gas and
++    # gld with TLS support are in use, native TLS cannot work.
++    set_have_as_tls=no
++    ;;
++esac
+ if test $set_have_as_tls = yes ; then
+   AC_DEFINE(HAVE_AS_TLS, 1,
+ 	    [Define if your assembler and linker support thread-local storage.])
+diff -Nur gcc-15.1.0/gcc/cp/mapper-client.cc gcc-15.1.0-irix/gcc/cp/mapper-client.cc
+--- gcc-15.1.0/gcc/cp/mapper-client.cc	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/cp/mapper-client.cc	2025-04-26 06:25:08.489852942 +0000
+@@ -22,6 +22,7 @@
+ #if defined (__unix__)
+ // Solaris11's socket header used bcopy, which we poison.  cody.hh
+ // will include it later under the above check
++#include <sys/types.h>
+ #include <sys/socket.h>
+ #endif
+ #define INCLUDE_STRING
+diff -Nur gcc-15.1.0/gcc/hwint.h gcc-15.1.0-irix/gcc/hwint.h
+--- gcc-15.1.0/gcc/hwint.h	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/hwint.h	2025-04-26 06:25:08.489852942 +0000
+@@ -155,6 +155,18 @@
+ #  define HOST_BITS_PER_WIDEST_FAST_INT HOST_BITS_PER_LONG
+ #endif
+ 
++#ifndef PRId64
++#define PRId64 "lld"
++#endif
++
++#ifndef PRIu64
++#define PRIu64 "llu"
++#endif
++
++#ifndef PRIx64
++#define PRIx64 "llx"
++#endif
++
+ /* Inline functions operating on HOST_WIDE_INT.  */
+ 
+ /* Return X with all but the lowest bit masked off.  */
+diff -Nur gcc-15.1.0/gcc/sreal.cc gcc-15.1.0-irix/gcc/sreal.cc
+--- gcc-15.1.0/gcc/sreal.cc	2025-04-25 08:18:01.000000000 +0000
++++ gcc-15.1.0-irix/gcc/sreal.cc	2025-04-26 06:25:08.489852942 +0000
+@@ -59,6 +59,10 @@
+ #include "cgraph.h"
+ #include "data-streamer.h"
+ 
++#ifndef PRIi64
++#define PRIi64 "lli"
++#endif
++
+ /* Print the content of struct sreal.  */
+ 
+ void
+diff -Nur gcc-15.1.0/gcc/varasm.cc gcc-15.1.0-irix/gcc/varasm.cc
+--- gcc-15.1.0/gcc/varasm.cc	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/gcc/varasm.cc	2025-04-26 06:25:08.490853048 +0000
+@@ -3144,7 +3144,7 @@
+       gcc_assert (!i);
+     }
+ 
+-  gcc_assert (!force);
++/*  gcc_assert (!force); */
+ 
+   return false;
+ }
+@@ -7141,7 +7141,7 @@
+ {
+   /* Some object formats don't support named sections at all.  The
+      front-end should already have flagged this as an error.  */
+-  gcc_unreachable ();
++  /* gcc_unreachable (); */
+ }
+ 
+ #ifndef TLS_SECTION_ASM_FLAG
+Binary files gcc-15.1.0/gmp-6.2.1.tar.bz2 and gcc-15.1.0-irix/gmp-6.2.1.tar.bz2 differ
+diff -Nur gcc-15.1.0/irix-conf.sh gcc-15.1.0-irix/irix-conf.sh
+--- gcc-15.1.0/irix-conf.sh	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/irix-conf.sh	2025-04-26 06:25:08.490853048 +0000
+@@ -0,0 +1,9 @@
++Cross:
++../configure --prefix=/opt/cross-irix5-new --target=mips-sgi-irix5 --without-nls --with-sysroot=/opt/cross-irix5-new/sysroot --with-gnu-as --with-gnu-ld --disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins
++
++Native:
++mkdir gcc
++cat > gcc/config.cache
++ac_cv_c_bigendian=${ac_cv_c_bigendian=yes}
++
++../configure --prefix=/opt/dev-irix5 --host=mips-sgi-irix5 -build=x86_64-linux-gnu --without-nls --with-gnu-as --with-gnu-ld --disable-libssp --enable-languages=c,c++ --disable-nls --enable-pgo-build=no --enable-lto=no CC_FOR_TARGET=mips-sgi-irix5-gcc CXX_FOR_TARGET=mips-sgi-irix5-g++
+Binary files gcc-15.1.0/isl-0.24.tar.bz2 and gcc-15.1.0-irix/isl-0.24.tar.bz2 differ
+diff -Nur gcc-15.1.0/libbacktrace/dwarf.c gcc-15.1.0-irix/libbacktrace/dwarf.c
+--- gcc-15.1.0/libbacktrace/dwarf.c	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libbacktrace/dwarf.c	2025-04-26 06:25:08.490853048 +0000
+@@ -414,7 +414,7 @@
+ {
+   char b[200];
+ 
+-  snprintf (b, sizeof b, "%s in %s at %d",
++  sprintf (b, "%s in %s at %d",
+ 	    msg, buf->name, (int) (buf->buf - buf->start));
+   buf->error_callback (buf->data, b, errnum);
+ }
+diff -Nur gcc-15.1.0/libbacktrace/fileline.c gcc-15.1.0-irix/libbacktrace/fileline.c
+--- gcc-15.1.0/libbacktrace/fileline.c	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libbacktrace/fileline.c	2025-04-26 06:25:08.490853048 +0000
+@@ -300,7 +300,7 @@
+ 	  filename = "/proc/curproc/file";
+ 	  break;
+ 	case 5:
+-	  snprintf (buf, sizeof (buf), "/proc/%ld/object/a.out",
++	  sprintf (buf, "/proc/%ld/object/a.out",
+ 		    (long) getpid ());
+ 	  filename = buf;
+ 	  break;
+diff -Nur gcc-15.1.0/libcody/buffer.cc gcc-15.1.0-irix/libcody/buffer.cc
+--- gcc-15.1.0/libcody/buffer.cc	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libcody/buffer.cc	2025-04-26 06:25:08.490853048 +0000
+@@ -150,7 +150,11 @@
+   // gcc 4.8, which is a C++11 compiler lacking std::to_string.  so
+   // have something horrible.
+   std::string v (20, 0);
++#ifdef sgi
++  size_t len = sprintf (const_cast<char *> (v.data ()), "%u", u);
++#else
+   size_t len = snprintf (const_cast<char *> (v.data ()), v.size (), "%u", u);
++#endif
+   v.erase (len);
+ 
+   AppendWord (v);
+diff -Nur gcc-15.1.0/libcody/cody.hh gcc-15.1.0-irix/libcody/cody.hh
+--- gcc-15.1.0/libcody/cody.hh	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libcody/cody.hh	2025-04-26 06:25:08.490853048 +0000
+@@ -5,6 +5,10 @@
+ #ifndef CODY_HH
+ #define CODY_HH 1
+ 
++#ifdef sgi
++#define CODY_NETWORKING 0
++#endif
++
+ // If the user specifies this as non-zero, it must be what we expect,
+ // generally only good for requesting no networking
+ #if !defined (CODY_NETWORKING)
+@@ -20,6 +24,10 @@
+ #endif
+ #endif
+ 
++#ifdef sgi
++#define socklen_t uint32_t
++#endif
++
+ // C++
+ #include <memory>
+ #include <string>
+diff -Nur gcc-15.1.0/libgcc/Makefile.in gcc-15.1.0-irix/libgcc/Makefile.in
+--- gcc-15.1.0/libgcc/Makefile.in	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libgcc/Makefile.in	2025-04-26 06:25:08.491853153 +0000
+@@ -1097,6 +1097,12 @@
+ 
+ crtn$(objext): $(srcdir)/config/$(cpu_type)/crtn.S
+ 	$(crt_compile) -c -x assembler-with-cpp $<
++
++irix-crti$(objext): $(srcdir)/config/$(cpu_type)/irix-crti.asm
++	$(crt_compile) -c -x assembler-with-cpp $<
++
++irix-crtn$(objext): $(srcdir)/config/$(cpu_type)/irix-crtn.asm
++	$(crt_compile) -c -x assembler-with-cpp $<
+ endif
+ 
+ # Build extra startfiles in the libgcc directory.
+diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crti.asm gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm
+--- gcc-15.1.0/libgcc/config/mips/irix-crti.asm	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm	2025-04-26 06:25:08.491853153 +0000
+@@ -0,0 +1,81 @@
++/* Copyright (C) 2004, 2008 Free Software Foundation, Inc.
++
++This file is part of GCC.
++
++GCC is free software; you can redistribute it and/or modify it under
++the terms of the GNU General Public License as published by the Free
++Software Foundation; either version 3, or (at your option) any later
++version.
++
++GCC is distributed in the hope that it will be useful, but WITHOUT ANY
++WARRANTY; without even the implied warranty of MERCHANTABILITY or
++FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++for more details.
++
++Under Section 7 of GPL version 3, you are granted additional
++permissions described in the GCC Runtime Library Exception, version
++3.1, as published by the Free Software Foundation.
++
++You should have received a copy of the GNU General Public License and
++a copy of the GCC Runtime Library Exception along with this program;
++see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++<http://www.gnu.org/licenses/>.  */
++
++	.abicalls
++	.set	noreorder
++	.set	nomacro
++
++/* The GNU and SGI linkers differ in their implementation of -init and -fini.
++   With the GNU linker, there can only be a single -init option, and the
++   linker simply sets DT_INIT to that value.  gcc's initialization and
++   finalization code can go directly in .init, with the prologue and
++   epilogue of the main initialization routine being provided by external
++   object files (*crti.o and *crtn.o in this case).
++
++   The SGI linker instead accepts several -init options.  It will set DT_INIT
++   to a linker-created function (placed in .init) that calls each of the -init
++   functions in turn.  If there is any user code in .init, this linker-created
++   function will be placed after it.  Note that such user code is not treated
++   specially; it will only be called if the -init options arrange for it to
++   be called.
++
++   In theory, the SGI model should allow the crti, crtn and intermediate code
++   to go in .init, just like it can with the GNU linker.  However, doing this
++   seems to confuse the linker and triggers an internal error:
++
++      ld32: FATAL   2  : Internal: at ../../ld/mips_code.c mips_code_fixup()
++	 text section overflow!
++
++   (seen with MIPSpro 7.30).  We therefore put everything in a special
++   .gcc_init section instead.  */
++
++	.section .gcc_init,"ax",@progbits
++	.globl	__gcc_init
++__gcc_init:
++#if _MIPS_SIM == _ABIO32
++	addiu	$sp,$sp,-16
++	sw	$31,0($sp)
++#else
++	daddiu	$sp,$sp,-16
++	sd	$31,0($sp)
++	sd	$28,8($sp)
++#endif
++
++	.section .gcc_fini,"ax",@progbits
++	.globl	__gcc_fini
++__gcc_fini:
++#if _MIPS_SIM == _ABIO32
++	addiu	$sp,$sp,-16
++	sw	$31,0($sp)
++#else
++	daddiu	$sp,$sp,-16
++	sd	$31,0($sp)
++	sd	$28,8($sp)
++#endif
++
++/* This object will typically be included in the final link for both
++   shared libraries and executable, and we need to hide the symbols to
++   prevent possible symbol preemption warnings from the SGI linker.  */
++.hidden __gcc_init
++.hidden __gcc_fini
++
+diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crtn.asm gcc-15.1.0-irix/libgcc/config/mips/irix-crtn.asm
+--- gcc-15.1.0/libgcc/config/mips/irix-crtn.asm	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libgcc/config/mips/irix-crtn.asm	2025-04-26 06:25:08.491853153 +0000
+@@ -0,0 +1,50 @@
++/* Copyright (C) 2004 Free Software Foundation, Inc.
++
++This file is part of GCC.
++
++GCC is free software; you can redistribute it and/or modify it under
++the terms of the GNU General Public License as published by the Free
++Software Foundation; either version 3, or (at your option) any later
++version.
++
++GCC is distributed in the hope that it will be useful, but WITHOUT ANY
++WARRANTY; without even the implied warranty of MERCHANTABILITY or
++FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++for more details.
++
++Under Section 7 of GPL version 3, you are granted additional
++permissions described in the GCC Runtime Library Exception, version
++3.1, as published by the Free Software Foundation.
++
++You should have received a copy of the GNU General Public License and
++a copy of the GCC Runtime Library Exception along with this program;
++see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++<http://www.gnu.org/licenses/>.  */
++
++	.abicalls
++	.set	noreorder
++	.set	nomacro
++
++	.section .gcc_init,"ax",@progbits
++#if _MIPS_SIM == _ABIO32
++	lw	$31,0($sp)
++	jr	$31
++	addiu	$sp,$sp,16
++#else
++	ld	$31,0($sp)
++	ld	$28,8($sp)
++	jr	$31
++	daddiu	$sp,$sp,16
++#endif
++
++	.section .gcc_fini,"ax",@progbits
++#if _MIPS_SIM == _ABIO32
++	lw	$31,0($sp)
++	jr	$31
++	addiu	$sp,$sp,16
++#else
++	ld	$31,0($sp)
++	ld	$28,8($sp)
++	jr	$31
++	daddiu	$sp,$sp,16
++#endif
+diff -Nur gcc-15.1.0/libgcc/config.host gcc-15.1.0-irix/libgcc/config.host
+--- gcc-15.1.0/libgcc/config.host	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libgcc/config.host	2025-04-26 06:25:08.491853153 +0000
+@@ -1061,6 +1061,9 @@
+ 	tmake_file="${tmake_file} microblaze/t-microblaze t-fdpbit"
+ 	extra_parts="$extra_parts crtbeginS.o crtendS.o crtbeginT.o crti.o crtn.o"
+ 	;;
++mips-sgi-irix[56]*)
++	extra_parts="irix-crti.o irix-crtn.o crtbegin.o crtend.o"
++	;;
+ mips*-*-netbsd*)			# NetBSD/mips, either endian.
+ 	;;
+ mips*-*-linux*)				# Linux MIPS, either endian.
+diff -Nur gcc-15.1.0/libgcc/gthr-posix.h gcc-15.1.0-irix/libgcc/gthr-posix.h
+--- gcc-15.1.0/libgcc/gthr-posix.h	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libgcc/gthr-posix.h	2025-04-26 06:25:08.491853153 +0000
+@@ -64,7 +64,7 @@
+ typedef pthread_once_t __gthread_once_t;
+ typedef pthread_mutex_t __gthread_mutex_t;
+ #ifndef __cplusplus
+-typedef pthread_rwlock_t __gthread_rwlock_t;
++/*typedef pthread_rwlock_t __gthread_rwlock_t;*/
+ #endif
+ typedef pthread_mutex_t __gthread_recursive_mutex_t;
+ typedef pthread_cond_t __gthread_cond_t;
+@@ -126,13 +126,13 @@
+ 
+ __gthrw(pthread_create)
+ __gthrw(pthread_join)
+-__gthrw(pthread_equal)
++/*__gthrw(pthread_equal)*/
+ __gthrw(pthread_self)
+ __gthrw(pthread_detach)
+ #ifndef __BIONIC__
+ __gthrw(pthread_cancel)
+ #endif
+-__gthrw(sched_yield)
++/*__gthrw(sched_yield)*/
+ 
+ __gthrw(pthread_mutex_lock)
+ __gthrw(pthread_mutex_trylock)
+@@ -153,15 +153,15 @@
+ __gthrw(pthread_key_create)
+ __gthrw(pthread_key_delete)
+ __gthrw(pthread_mutexattr_init)
+-__gthrw(pthread_mutexattr_settype)
++/*__gthrw(pthread_mutexattr_settype)*/
+ __gthrw(pthread_mutexattr_destroy)
+ 
+ #ifndef __cplusplus
+-__gthrw(pthread_rwlock_rdlock)
+-__gthrw(pthread_rwlock_tryrdlock)
+-__gthrw(pthread_rwlock_wrlock)
+-__gthrw(pthread_rwlock_trywrlock)
+-__gthrw(pthread_rwlock_unlock)
++/*__gthrw(pthread_rwlock_rdlock)*/
++/*__gthrw(pthread_rwlock_tryrdlock)*/
++/*__gthrw(pthread_rwlock_wrlock)*/
++/*__gthrw(pthread_rwlock_trywrlock)*/
++/*__gthrw(pthread_rwlock_unlock)*/
+ #endif
+ 
+ #if defined(_LIBOBJC) || defined(_LIBOBJC_WEAK)
+@@ -491,12 +491,12 @@
+ }
+ 
+ /* Yield our process time to another thread.  */
+-static inline void
++/*static inline void
+ __gthread_objc_thread_yield (void)
+ {
+   if (__gthread_active_p ())
+     __gthrw_(sched_yield) ();
+-}
++}*/
+ 
+ /* Terminate the current thread.  */
+ static inline int
+@@ -721,11 +721,11 @@
+   return __gthrw_(pthread_detach) (__threadid);
+ }
+ 
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_equal (__gthread_t __t1, __gthread_t __t2)
+ {
+   return __gthrw_(pthread_equal) (__t1, __t2);
+-}
++}*/
+ 
+ __GTHREAD_INLINE __gthread_t
+ __gthread_self (void)
+@@ -733,11 +733,11 @@
+   return __gthrw_(pthread_self) ();
+ }
+ 
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_yield (void)
+ {
+   return __gthrw_(sched_yield) ();
+-}
++}*/
+ 
+ __GTHREAD_INLINE int
+ __gthread_once (__gthread_once_t *__once, void (*__func) (void))
+@@ -838,9 +838,9 @@
+       int __r;
+ 
+       __r = __gthrw_(pthread_mutexattr_init) (&__attr);
+-      if (!__r)
+-	__r = __gthrw_(pthread_mutexattr_settype) (&__attr,
+-						   PTHREAD_MUTEX_RECURSIVE);
++//      if (!__r)
++//	__r = __gthrw_(pthread_mutexattr_settype) (&__attr,
++//						   PTHREAD_MUTEX_RECURSIVE);
+       if (!__r)
+ 	__r = __gthrw_(pthread_mutex_init) (__mutex, &__attr);
+       if (!__r)
+@@ -932,50 +932,50 @@
+ }
+ 
+ #ifndef __cplusplus
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_rwlock_rdlock (__gthread_rwlock_t *__rwlock)
+ {
+   if (__gthread_active_p ())
+     return __gthrw_(pthread_rwlock_rdlock) (__rwlock);
+   else
+     return 0;
+-}
++}*/
+ 
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_rwlock_tryrdlock (__gthread_rwlock_t *__rwlock)
+ {
+   if (__gthread_active_p ())
+     return __gthrw_(pthread_rwlock_tryrdlock) (__rwlock);
+   else
+     return 0;
+-}
++}*/
+ 
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_rwlock_wrlock (__gthread_rwlock_t *__rwlock)
+ {
+   if (__gthread_active_p ())
+     return __gthrw_(pthread_rwlock_wrlock) (__rwlock);
+   else
+     return 0;
+-}
++}*/
+ 
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_rwlock_trywrlock (__gthread_rwlock_t *__rwlock)
+ {
+   if (__gthread_active_p ())
+     return __gthrw_(pthread_rwlock_trywrlock) (__rwlock);
+   else
+     return 0;
+-}
++}*/
+ 
+-__GTHREAD_INLINE int
++/*__GTHREAD_INLINE int
+ __gthread_rwlock_unlock (__gthread_rwlock_t *__rwlock)
+ {
+   if (__gthread_active_p ())
+     return __gthrw_(pthread_rwlock_unlock) (__rwlock);
+   else
+     return 0;
+-}
++}*/
+ #endif
+ 
+ #endif /* _LIBOBJC */
+diff -Nur gcc-15.1.0/libgcc/libgcov.h gcc-15.1.0-irix/libgcc/libgcov.h
+--- gcc-15.1.0/libgcc/libgcov.h	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libgcc/libgcov.h	2025-04-26 06:25:08.491853153 +0000
+@@ -46,7 +46,10 @@
+ #include "gcov.h"
+ 
+ #if HAVE_SYS_MMAN_H
++#include <sys/types.h>
+ #include <sys/mman.h>
++#include <sys/stat.h>
++#include <fcntl.h>
+ #endif
+ 
+ #if __CHAR_BIT__ == 8
+@@ -427,8 +430,14 @@
+ static inline void *
+ malloc_mmap (size_t length)
+ {
+-  return mmap (NULL, length, PROT_READ | PROT_WRITE,
+-	       MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++  int fd = open("/dev/zero", O_RDWR);
++  if (fd < 0)
++    return MAP_FAILED;
++  void *ret = mmap (NULL, length, PROT_READ | PROT_WRITE,
++	       MAP_PRIVATE, fd, 0);
++
++  close(fd);
++  return ret;
+ }
+ 
+ #endif
+diff -Nur gcc-15.1.0/libgomp/configure.tgt gcc-15.1.0-irix/libgomp/configure.tgt
+--- gcc-15.1.0/libgomp/configure.tgt	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libgomp/configure.tgt	2025-04-26 06:25:08.491853153 +0000
+@@ -186,6 +186,11 @@
+ 	XCFLAGS="$XCFLAGS -Wno-error=array-bounds"
+ 	;;
+ 
++  mips-sgi-irix6*)
++	# Need to link with -lpthread so libgomp.so is self-contained.
++	XLDFLAGS="${XLDFLAGS} -lpthread"
++	;;
++
+   *)
+ 	;;
+ 
+diff -Nur gcc-15.1.0/libiberty/rust-demangle.c gcc-15.1.0-irix/libiberty/rust-demangle.c
+--- gcc-15.1.0/libiberty/rust-demangle.c	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libiberty/rust-demangle.c	2025-04-26 06:25:08.491853153 +0000
+@@ -285,7 +285,7 @@
+ print_uint64 (struct rust_demangler *rdm, uint64_t x)
+ {
+   char s[21];
+-  snprintf (s, 21, "%" PRIu64, x);
++  sprintf (s, "%llu", x);
+   PRINT (s);
+ }
+ 
+@@ -293,7 +293,7 @@
+ print_uint64_hex (struct rust_demangler *rdm, uint64_t x)
+ {
+   char s[17];
+-  snprintf (s, 17, "%" PRIx64, x);
++  sprintf (s, "%llx", x);
+   PRINT (s);
+ }
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/Makefile.in gcc-15.1.0-irix/libstdc++-v3/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/Makefile.in	2025-04-25 08:21:27.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/Makefile.in	2025-04-26 06:25:08.492853258 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -135,7 +135,7 @@
+ am__v_at_0 = @
+ am__v_at_1 = 
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ SOURCES =
+ RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
+ 	ctags-recursive dvi-recursive html-recursive info-recursive \
+@@ -158,8 +158,8 @@
+   $(am__extra_recursive_targets)
+ AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
+ 	cscope
+-am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
+-	$(LISP)config.h.in
++am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP) \
++	config.h.in
+ # Read a list of newline-separated strings from the standard input,
+ # and print each of them once, without duplicates.  Input order is
+ # *not* preserved.
+@@ -176,9 +176,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+-CSCOPE = cscope
+ DIST_SUBDIRS = include libsupc++ src doc po testsuite python
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+@@ -219,7 +216,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -241,6 +240,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -523,8 +523,8 @@
+ 	    echo ' $(SHELL) ./config.status'; \
+ 	    $(SHELL) ./config.status;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(top_srcdir)/../multilib.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/aclocal.m4 gcc-15.1.0-irix/libstdc++-v3/aclocal.m4
+--- gcc-15.1.0/libstdc++-v3/aclocal.m4	2025-04-25 08:21:27.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/aclocal.m4	2025-04-26 06:25:08.492853258 +0000
+@@ -1,6 +1,6 @@
+-# generated automatically by aclocal 1.15.1 -*- Autoconf -*-
++# generated automatically by aclocal 1.16.5 -*- Autoconf -*-
+ 
+-# Copyright (C) 1996-2017 Free Software Foundation, Inc.
++# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+ 
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -20,7 +20,7 @@
+ If you have problems, you may need to regenerate the build system entirely.
+ To do so, use the procedure documented by the package, typically 'autoreconf'.])])
+ 
+-# Copyright (C) 2002-2017 Free Software Foundation, Inc.
++# Copyright (C) 2002-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -32,10 +32,10 @@
+ # generated from the m4 files accompanying Automake X.Y.
+ # (This private macro should not be called outside this file.)
+ AC_DEFUN([AM_AUTOMAKE_VERSION],
+-[am__api_version='1.15'
++[am__api_version='1.16'
+ dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
+ dnl require some minimum version.  Point them to the right macro.
+-m4_if([$1], [1.15.1], [],
++m4_if([$1], [1.16.5], [],
+       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
+ ])
+ 
+@@ -51,14 +51,14 @@
+ # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
+ # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
+ AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
+-[AM_AUTOMAKE_VERSION([1.15.1])dnl
++[AM_AUTOMAKE_VERSION([1.16.5])dnl
+ m4_ifndef([AC_AUTOCONF_VERSION],
+   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
+ _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
+ 
+ # AM_AUX_DIR_EXPAND                                         -*- Autoconf -*-
+ 
+-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
++# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -110,7 +110,7 @@
+ 
+ # AM_CONDITIONAL                                            -*- Autoconf -*-
+ 
+-# Copyright (C) 1997-2017 Free Software Foundation, Inc.
++# Copyright (C) 1997-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -143,7 +143,7 @@
+ 
+ # Do all the work for Automake.                             -*- Autoconf -*-
+ 
+-# Copyright (C) 1996-2017 Free Software Foundation, Inc.
++# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -171,6 +171,10 @@
+ # release and drop the old call support.
+ AC_DEFUN([AM_INIT_AUTOMAKE],
+ [AC_PREREQ([2.65])dnl
++m4_ifdef([_$0_ALREADY_INIT],
++  [m4_fatal([$0 expanded multiple times
++]m4_defn([_$0_ALREADY_INIT]))],
++  [m4_define([_$0_ALREADY_INIT], m4_expansion_stack)])dnl
+ dnl Autoconf wants to disallow AM_ names.  We explicitly allow
+ dnl the ones we care about.
+ m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
+@@ -207,7 +211,7 @@
+ [_AM_SET_OPTIONS([$1])dnl
+ dnl Diagnose old-style AC_INIT with new-style AM_AUTOMAKE_INIT.
+ m4_if(
+-  m4_ifdef([AC_PACKAGE_NAME], [ok]):m4_ifdef([AC_PACKAGE_VERSION], [ok]),
++  m4_ifset([AC_PACKAGE_NAME], [ok]):m4_ifset([AC_PACKAGE_VERSION], [ok]),
+   [ok:ok],,
+   [m4_fatal([AC_INIT should be called with package and version arguments])])dnl
+  AC_SUBST([PACKAGE], ['AC_PACKAGE_TARNAME'])dnl
+@@ -230,8 +234,8 @@
+ AC_REQUIRE([AC_PROG_MKDIR_P])dnl
+ # For better backward compatibility.  To be removed once Automake 1.9.x
+ # dies out for good.  For more background, see:
+-# <http://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
+-# <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
++# <https://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
++# <https://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
+ AC_SUBST([mkdir_p], ['$(MKDIR_P)'])
+ # We need awk for the "check" target (and possibly the TAP driver).  The
+ # system "awk" is bad on some platforms.
+@@ -259,6 +263,20 @@
+ 		  [m4_define([AC_PROG_OBJCXX],
+ 			     m4_defn([AC_PROG_OBJCXX])[_AM_DEPENDENCIES([OBJCXX])])])dnl
+ ])
++# Variables for tags utilities; see am/tags.am
++if test -z "$CTAGS"; then
++  CTAGS=ctags
++fi
++AC_SUBST([CTAGS])
++if test -z "$ETAGS"; then
++  ETAGS=etags
++fi
++AC_SUBST([ETAGS])
++if test -z "$CSCOPE"; then
++  CSCOPE=cscope
++fi
++AC_SUBST([CSCOPE])
++
+ AC_REQUIRE([AM_SILENT_RULES])dnl
+ dnl The testsuite driver may need to know about EXEEXT, so add the
+ dnl 'am__EXEEXT' conditional if _AM_COMPILER_EXEEXT was seen.  This
+@@ -298,7 +316,7 @@
+ Aborting the configuration process, to ensure you take notice of the issue.
+ 
+ You can download and install GNU coreutils to get an 'rm' implementation
+-that behaves properly: <http://www.gnu.org/software/coreutils/>.
++that behaves properly: <https://www.gnu.org/software/coreutils/>.
+ 
+ If you want to complete the configuration process using your problematic
+ 'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
+@@ -340,7 +358,7 @@
+ done
+ echo "timestamp for $_am_arg" >`AS_DIRNAME(["$_am_arg"])`/stamp-h[]$_am_stamp_count])
+ 
+-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
++# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -364,7 +382,7 @@
+ # Add --enable-maintainer-mode option to configure.         -*- Autoconf -*-
+ # From Jim Meyering
+ 
+-# Copyright (C) 1996-2017 Free Software Foundation, Inc.
++# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -399,7 +417,7 @@
+ 
+ # Fake the existence of programs that GNU maintainers use.  -*- Autoconf -*-
+ 
+-# Copyright (C) 1997-2017 Free Software Foundation, Inc.
++# Copyright (C) 1997-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -420,12 +438,7 @@
+ [AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
+ AC_REQUIRE_AUX_FILE([missing])dnl
+ if test x"${MISSING+set}" != xset; then
+-  case $am_aux_dir in
+-  *\ * | *\	*)
+-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
+-  *)
+-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
+-  esac
++  MISSING="\${SHELL} '$am_aux_dir/missing'"
+ fi
+ # Use eval to expand $SHELL
+ if eval "$MISSING --is-lightweight"; then
+@@ -438,7 +451,7 @@
+ 
+ # Helper functions for option handling.                     -*- Autoconf -*-
+ 
+-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
++# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -467,7 +480,7 @@
+ AC_DEFUN([_AM_IF_OPTION],
+ [m4_ifset(_AM_MANGLE_OPTION([$1]), [$2], [$3])])
+ 
+-# Copyright (C) 1999-2017 Free Software Foundation, Inc.
++# Copyright (C) 1999-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -514,7 +527,7 @@
+ # For backward compatibility.
+ AC_DEFUN_ONCE([AM_PROG_CC_C_O], [AC_REQUIRE([AC_PROG_CC])])
+ 
+-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
++# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -533,7 +546,7 @@
+ 
+ # Check to make sure that the build environment is sane.    -*- Autoconf -*-
+ 
+-# Copyright (C) 1996-2017 Free Software Foundation, Inc.
++# Copyright (C) 1996-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -614,7 +627,7 @@
+ rm -f conftest.file
+ ])
+ 
+-# Copyright (C) 2009-2017 Free Software Foundation, Inc.
++# Copyright (C) 2009-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -674,7 +687,7 @@
+ _AM_SUBST_NOTMAKE([AM_BACKSLASH])dnl
+ ])
+ 
+-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
++# Copyright (C) 2001-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -702,7 +715,7 @@
+ INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
+ AC_SUBST([INSTALL_STRIP_PROGRAM])])
+ 
+-# Copyright (C) 2006-2017 Free Software Foundation, Inc.
++# Copyright (C) 2006-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -721,7 +734,7 @@
+ 
+ # Check how to create a tarball.                            -*- Autoconf -*-
+ 
+-# Copyright (C) 2004-2017 Free Software Foundation, Inc.
++# Copyright (C) 2004-2021 Free Software Foundation, Inc.
+ #
+ # This file is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/atomic_word.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomic_word.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/atomic_word.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomic_word.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,30 @@
++// Low-level type for atomic operations -*- C++ -*-
++
++// Copyright (C) 2004, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++#ifndef _GLIBCXX_ATOMIC_WORD_H
++#define _GLIBCXX_ATOMIC_WORD_H	1
++
++typedef long _Atomic_word;
++
++#endif 
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/atomicity.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomicity.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/atomicity.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomicity.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,38 @@
++// Low-level functions for atomic operations: IRIX version  -*- C++ -*-
++
++// Copyright (C) 2001, 2004, 2005, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++#include <mutex.h>
++#include <ext/atomicity.h>
++
++_GLIBCXX_BEGIN_NAMESPACE(__gnu_cxx)
++
++  _Atomic_word
++  __exchange_and_add(volatile _Atomic_word* __mem, int __val) throw ()
++  { return (_Atomic_word) test_then_add((unsigned long*) const_cast<_Atomic_word*>(__mem), __val); }
++
++  void
++  __atomic_add(volatile _Atomic_word* __mem, int __val) throw ()
++  { __exchange_and_add(__mem, __val); }
++
++_GLIBCXX_END_NAMESPACE
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,61 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 1997-1999, 2001, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++  
++// Information as gleaned from /usr/include/ctype.h on irix 5.2
++  
++namespace std _GLIBCXX_VISIBILITY(default)
++{
++_GLIBCXX_BEGIN_NAMESPACE_VERSION
++
++  /// @brief  Base class for ctype.
++  struct ctype_base
++  {
++    // Non-standard typedefs.
++    typedef unsigned int*      	__to_type;
++
++    // NB: Offsets into ctype<char>::_M_table force a particular size
++    // on the mask type. Because of this, we don't use an enum.
++    typedef unsigned char	mask;
++    static const mask upper    	= _U;
++    static const mask lower 	= _L;
++    static const mask alpha 	= _U | _L;
++    static const mask digit 	= _N;
++    static const mask xdigit 	= _X;
++    static const mask space 	= _S;
++    static const mask print 	= _U | _L | _N | _P | _B;
++    static const mask graph 	= _U | _L | _N | _P;
++    static const mask cntrl 	= _C;
++    static const mask punct 	= _P;
++    static const mask alnum 	= _U | _L | _N;
++#if __cplusplus >= 201103L
++    static const mask blank	= _S;
++#endif
++  };
++
++_GLIBCXX_END_NAMESPACE_VERSION
++} // namespace
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,99 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 2011-2024 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++/** @file ctype_configure_char.cc */
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++
++#include <locale>
++#include <cstdlib>
++#include <cstring>
++
++namespace std _GLIBCXX_VISIBILITY(default)
++{
++_GLIBCXX_BEGIN_NAMESPACE_VERSION
++
++// Information as gleaned from /usr/include/ctype.h
++
++  const ctype_base::mask*
++  ctype<char>::classic_table() throw()
++  { return 0; }
++
++  ctype<char>::ctype(__c_locale, const mask* __table, bool __del,
++		     size_t __refs)
++  : facet(__refs), _M_del(__table != 0 && __del),
++  _M_toupper(NULL), _M_tolower(NULL),
++  _M_table(__table ? __table : classic_table())
++  {
++    memset(_M_widen, 0, sizeof(_M_widen));
++    _M_widen_ok = 0;
++    memset(_M_narrow, 0, sizeof(_M_narrow));
++    _M_narrow_ok = 0;
++  }
++
++  ctype<char>::ctype(const mask* __table, bool __del, size_t __refs)
++  : facet(__refs), _M_del(__table != 0 && __del),
++  _M_toupper(NULL), _M_tolower(NULL),
++  _M_table(__table ? __table : classic_table())
++  {
++    memset(_M_widen, 0, sizeof(_M_widen));
++    _M_widen_ok = 0;
++    memset(_M_narrow, 0, sizeof(_M_narrow));
++    _M_narrow_ok = 0;
++  }
++
++  char
++  ctype<char>::do_toupper(char __c) const
++  { return ::toupper((int) __c); }
++
++  const char*
++  ctype<char>::do_toupper(char* __low, const char* __high) const
++  {
++    while (__low < __high)
++      {
++	*__low = ::toupper((int) *__low);
++	++__low;
++      }
++    return __high;
++  }
++
++  char
++  ctype<char>::do_tolower(char __c) const
++  { return ::tolower((int) __c); }
++
++  const char*
++  ctype<char>::do_tolower(char* __low, const char* __high) const
++  {
++    while (__low < __high)
++      {
++	*__low = ::tolower((int) *__low);
++	++__low;
++      }
++    return __high;
++  }
++
++_GLIBCXX_END_NAMESPACE_VERSION
++} // namespace
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,74 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 2001, 2002, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++/** @file ctype_inline.h
++ *  This is an internal header file, included by other library headers.
++ *  You should not attempt to use it directly.
++ */
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++  
++// ctype bits to be inlined go here. Non-inlinable (ie virtual do_*)
++// functions go in ctype.cc
++  
++namespace std _GLIBCXX_VISIBILITY(default)
++{
++_GLIBCXX_BEGIN_NAMESPACE_VERSION
++
++  bool
++  ctype<char>::
++  is(mask __m, char __c) const
++  { return (_M_table)[static_cast<unsigned char>(__c)] & __m; }
++
++  const char*
++  ctype<char>::
++  is(const char* __low, const char* __high, mask* __vec) const
++  {
++    while (__low < __high)
++      *__vec++ = (_M_table)[static_cast<unsigned char>(*__low++)];
++    return __high;
++  }
++
++  const char*
++  ctype<char>::
++  scan_is(mask __m, const char* __low, const char* __high) const
++  {
++    while (__low < __high && ! this->is(__m, *__low))
++      ++__low;
++    return __low;
++  }
++
++  const char*
++  ctype<char>::
++  scan_not(mask __m, const char* __low, const char* __high) const
++  {
++    while (__low < __high && this->is(__m, *__low))
++      ++__low;
++    return __low;
++  }
++
++_GLIBCXX_END_NAMESPACE_VERSION
++} // namespace
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,93 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 1997, 1998, 1999, 2001, 2002, 2009
++//  Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++/** @file ctype_noninline.h
++ *  This is an internal header file, included by other library headers.
++ *  You should not attempt to use it directly.
++ */
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++  
++// Information as gleaned from /usr/include/ctype.h
++
++  const ctype_base::mask*
++  ctype<char>::classic_table() throw()
++  { return __ctype + 1; }
++
++  ctype<char>::ctype(__c_locale, const mask* __table, bool __del, 
++		     size_t __refs)
++  : facet(__refs), _M_del(__table != 0 && __del), 
++  _M_toupper(NULL), _M_tolower(NULL), 
++  _M_table(!__table ? classic_table() : __table)
++  { 
++    memset(_M_widen, 0, sizeof(_M_widen));
++    _M_widen_ok = 0;
++    memset(_M_narrow, 0, sizeof(_M_narrow));
++    _M_narrow_ok = 0;
++  }
++
++  ctype<char>::ctype(const mask* __table, bool __del, size_t __refs)
++  : facet(__refs), _M_del(__table != 0 && __del), 
++  _M_toupper(NULL), _M_tolower(NULL), 
++  _M_table(!__table ? classic_table() : __table)
++  { 
++    memset(_M_widen, 0, sizeof(_M_widen));
++    _M_widen_ok = 0;
++    memset(_M_narrow, 0, sizeof(_M_narrow));
++    _M_narrow_ok = 0;
++  }
++
++  char
++  ctype<char>::do_toupper(char __c) const
++  { return _toupper(__c); }
++
++  const char*
++  ctype<char>::do_toupper(char* __low, const char* __high) const
++  {
++    while (__low < __high)
++      {
++	*__low = do_toupper(*__low);
++	++__low;
++      }
++    return __high;
++  }
++
++  char
++  ctype<char>::do_tolower(char __c) const
++  { return _tolower(__c); }
++
++  const char* 
++  ctype<char>::do_tolower(char* __low, const char* __high) const
++  {
++    while (__low < __high)
++      {
++	*__low = do_tolower(*__low);
++	++__low;
++      }
++    return __high;
++  }
++
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/os_defines.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/os_defines.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/os_defines.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/os_defines.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,46 @@
++// Specific definitions for IRIX  -*- C++ -*-
++
++// Copyright (C) 2001, 2002, 2005, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++#ifndef _GLIBCXX_OS_DEFINES
++#define _GLIBCXX_OS_DEFINES 1
++
++// System-specific #define, typedefs, corrections, etc, go here.  This
++// file will come before all others.
++
++// We need large file support.  There are two ways to turn it on: by
++// defining either _LARGEFILE64_SOURCE or _SGI_SOURCE.  However, it
++// does not actually work to define only the former, as then
++// <sys/stat.h> is invalid: `st_blocks' is defined to be a macro, but
++// then used as a field name.  So, we have to turn on _SGI_SOURCE.
++// That only works if _POSIX_SOURCE is turned off, so we have to
++// explicitly turn it off.  (Some of the libio C files explicitly try
++// to turn it on.)  _SGI_SOURCE is actually turned on implicitly via
++// the command-line.
++#undef _POSIX_SOURCE
++
++// GCC does not use thunks on IRIX. 
++#define _G_USING_THUNKS 0
++
++#endif
++
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,55 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 1997, 1998, 1999, 2003, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++  
++// Information as gleaned from /usr/include/ctype.h on irix 6.5
++  
++_GLIBCXX_BEGIN_NAMESPACE(std)
++
++  /// @brief  Base class for ctype.
++  struct ctype_base
++  {
++    // Non-standard typedefs.
++    typedef int* 		__to_type;
++
++    // NB: Offsets into ctype<char>::_M_table force a particular size
++    // on the mask type. Because of this, we don't use an enum.
++    typedef unsigned int 	mask;
++    static const mask upper    	= _ISupper;
++    static const mask lower 	= _ISlower;
++    static const mask alpha 	= _ISalpha;
++    static const mask digit 	= _ISdigit;
++    static const mask xdigit 	= _ISxdigit;
++    static const mask space 	= _ISspace;
++    static const mask print 	= _ISprint;
++    static const mask graph 	= _ISalpha | _ISdigit | _ISpunct;
++    static const mask cntrl 	= _IScntrl;
++    static const mask punct 	= _ISpunct;
++    static const mask alnum 	= _ISalpha | _ISdigit;
++  };
++
++_GLIBCXX_END_NAMESPACE
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,71 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 2000, 2002, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++/** @file ctype_inline.h
++ *  This is an internal header file, included by other library headers.
++ *  You should not attempt to use it directly.
++ */
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++  
++// ctype bits to be inlined go here. Non-inlinable (ie virtual do_*)
++// functions go in ctype.cc
++  
++_GLIBCXX_BEGIN_NAMESPACE(std)
++
++  bool
++  ctype<char>::
++  is(mask __m, char __c) const
++  { return (_M_table)[static_cast<unsigned char>(__c)] & __m; }
++
++  const char*
++  ctype<char>::
++  is(const char* __low, const char* __high, mask* __vec) const
++  {
++    while (__low < __high)
++      *__vec++ = (_M_table)[static_cast<unsigned char>(*__low++)];
++    return __high;
++  }
++
++  const char*
++  ctype<char>::
++  scan_is(mask __m, const char* __low, const char* __high) const
++  {
++    while (__low < __high && ! this->is(__m, *__low))
++      ++__low;
++    return __low;
++  }
++
++  const char*
++  ctype<char>::
++  scan_not(mask __m, const char* __low, const char* __high) const
++  {
++    while (__low < __high && this->is(__m, *__low))
++      ++__low;
++    return __low;
++  }
++
++_GLIBCXX_END_NAMESPACE
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,94 @@
++// Locale support -*- C++ -*-
++
++// Copyright (C) 1997, 1998, 1999, 2001, 2002, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++/** @file ctype_noninline.h
++ *  This is an internal header file, included by other library headers.
++ *  You should not attempt to use it directly.
++ */
++
++//
++// ISO C++ 14882: 22.1  Locales
++//
++  
++// Information as gleaned from /usr/include/ctype.h
++
++  const ctype_base::mask*
++  ctype<char>::classic_table() throw()
++  { return 0; }
++
++  ctype<char>::ctype(__c_locale, const mask* __table, bool __del, 
++		     size_t __refs)
++  : facet(__refs), _M_del(__table != 0 && __del), 
++  _M_toupper(NULL), _M_tolower(NULL), 
++  _M_table(!__table ? 
++	   (const mask*) (__libc_attr._ctype_tbl->_class + 1) : __table) 
++  { 
++    memset(_M_widen, 0, sizeof(_M_widen));
++    _M_widen_ok = 0;
++    memset(_M_narrow, 0, sizeof(_M_narrow));
++    _M_narrow_ok = 0;
++  }
++
++  ctype<char>::ctype(const mask* __table, bool __del, size_t __refs)
++  : facet(__refs), _M_del(__table != 0 && __del), 
++  _M_toupper(NULL), _M_tolower(NULL), 
++  _M_table(!__table ? 
++	   (const mask*) (__libc_attr._ctype_tbl->_class + 1) : __table) 
++  { 
++    memset(_M_widen, 0, sizeof(_M_widen));
++    _M_widen_ok = 0;
++    memset(_M_narrow, 0, sizeof(_M_narrow));
++    _M_narrow_ok = 0;
++  }
++
++  char
++  ctype<char>::do_toupper(char __c) const
++  { return _toupper(__c); }
++
++  const char*
++  ctype<char>::do_toupper(char* __low, const char* __high) const
++  {
++    while (__low < __high)
++      {
++	*__low = do_toupper(*__low);
++	++__low;
++      }
++    return __high;
++  }
++
++  char
++  ctype<char>::do_tolower(char __c) const
++  { return _tolower(__c); }
++
++  const char* 
++  ctype<char>::do_tolower(char* __low, const char* __high) const
++  {
++    while (__low < __high)
++      {
++	*__low = do_tolower(*__low);
++	++__low;
++      }
++    return __high;
++  }
++
+diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/os_defines.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/os_defines.h
+--- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/os_defines.h	1970-01-01 00:00:00.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/os_defines.h	2025-04-26 06:25:08.492853258 +0000
+@@ -0,0 +1,49 @@
++// Specific definitions for IRIX  -*- C++ -*-
++
++// Copyright (C) 2000, 2002, 2009 Free Software Foundation, Inc.
++//
++// This file is part of the GNU ISO C++ Library.  This library is free
++// software; you can redistribute it and/or modify it under the
++// terms of the GNU General Public License as published by the
++// Free Software Foundation; either version 3, or (at your option)
++// any later version.
++
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++// GNU General Public License for more details.
++
++// Under Section 7 of GPL version 3, you are granted additional
++// permissions described in the GCC Runtime Library Exception, version
++// 3.1, as published by the Free Software Foundation.
++
++// You should have received a copy of the GNU General Public License and
++// a copy of the GCC Runtime Library Exception along with this program;
++// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
++// <http://www.gnu.org/licenses/>.
++
++#ifndef _GLIBCXX_OS_DEFINES
++#define _GLIBCXX_OS_DEFINES 1
++
++// System-specific #define, typedefs, corrections, etc, go here.  This
++// file will come before all others.
++
++// We need large file support.  There are two ways to turn it on: by
++// defining either _LARGEFILE64_SOURCE or _SGI_SOURCE.  However, it
++// does not actually work to define only the former, as then
++// <sys/stat.h> is invalid: `st_blocks' is defined to be a macro, but
++// then used as a field name.  So, we have to turn on _SGI_SOURCE.
++// That only works if _POSIX_SOURCE is turned off, so we have to
++// explicitly turn it off.  (Some of the libio C files explicitly try
++// to turn it on.)  _SGI_SOURCE is actually turned on implicitly via
++// the command-line.
++#undef _POSIX_SOURCE
++
++// GCC does not use thunks on IRIX. 
++#define _G_USING_THUNKS 0
++
++// FINOREAD takes an "off_t *" as argument.
++#define _GLIBCXX_FIONREAD_TAKES_OFF_T
++
++#endif
++
+diff -Nur gcc-15.1.0/libstdc++-v3/configure gcc-15.1.0-irix/libstdc++-v3/configure
+--- gcc-15.1.0/libstdc++-v3/configure	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/configure	2025-04-26 06:25:08.495853575 +0000
+@@ -838,6 +838,9 @@
+ AM_DEFAULT_VERBOSITY
+ AM_DEFAULT_V
+ AM_V
++CSCOPE
++ETAGS
++CTAGS
+ am__untar
+ am__tar
+ AMTAR
+@@ -3340,7 +3343,7 @@
+ #  no-dist:  we don't want 'dist' and related rules.
+ #  -Wall:  turns on all automake warnings...
+ #  -Wno-portability:  ...except this one, since GNU make is now required.
+-am__api_version='1.15'
++am__api_version='1.16'
+ 
+ # Find a good install program.  We prefer a C program (faster),
+ # so one script is as good as another.  But avoid the broken or
+@@ -3516,12 +3519,7 @@
+ am_aux_dir=`cd "$ac_aux_dir" && pwd`
+ 
+ if test x"${MISSING+set}" != xset; then
+-  case $am_aux_dir in
+-  *\ * | *\	*)
+-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
+-  *)
+-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
+-  esac
++  MISSING="\${SHELL} '$am_aux_dir/missing'"
+ fi
+ # Use eval to expand $SHELL
+ if eval "$MISSING --is-lightweight"; then
+@@ -3847,8 +3845,8 @@
+ 
+ # For better backward compatibility.  To be removed once Automake 1.9.x
+ # dies out for good.  For more background, see:
+-# <http://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
+-# <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
++# <https://lists.gnu.org/archive/html/automake/2012-07/msg00001.html>
++# <https://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
+ mkdir_p='$(MKDIR_P)'
+ 
+ # We need awk for the "check" target (and possibly the TAP driver).  The
+@@ -3867,6 +3865,20 @@
+ 
+ 
+ 
++# Variables for tags utilities; see am/tags.am
++if test -z "$CTAGS"; then
++  CTAGS=ctags
++fi
++
++if test -z "$ETAGS"; then
++  ETAGS=etags
++fi
++
++if test -z "$CSCOPE"; then
++  CSCOPE=cscope
++fi
++
++
+ 
+ # POSIX will say in a future version that running "rm -f" with no argument
+ # is OK; and we want to be able to make that assumption in our Makefile
+@@ -3899,7 +3911,7 @@
+ Aborting the configuration process, to ensure you take notice of the issue.
+ 
+ You can download and install GNU coreutils to get an 'rm' implementation
+-that behaves properly: <http://www.gnu.org/software/coreutils/>.
++that behaves properly: <https://www.gnu.org/software/coreutils/>.
+ 
+ If you want to complete the configuration process using your problematic
+ 'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
+@@ -5080,7 +5092,7 @@
+     We can't simply define LARGE_OFF_T to be 9223372036854775807,
+     since some C++ compilers masquerading as C compilers
+     incorrectly reject 9223372036854775807.  */
+-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
++#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+ 		       && LARGE_OFF_T % 2147483647 == 1)
+ 		      ? 1 : -1];
+@@ -5126,7 +5138,7 @@
+     We can't simply define LARGE_OFF_T to be 9223372036854775807,
+     since some C++ compilers masquerading as C compilers
+     incorrectly reject 9223372036854775807.  */
+-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
++#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+ 		       && LARGE_OFF_T % 2147483647 == 1)
+ 		      ? 1 : -1];
+@@ -5150,7 +5162,7 @@
+     We can't simply define LARGE_OFF_T to be 9223372036854775807,
+     since some C++ compilers masquerading as C compilers
+     incorrectly reject 9223372036854775807.  */
+-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
++#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+ 		       && LARGE_OFF_T % 2147483647 == 1)
+ 		      ? 1 : -1];
+@@ -5195,7 +5207,7 @@
+     We can't simply define LARGE_OFF_T to be 9223372036854775807,
+     since some C++ compilers masquerading as C compilers
+     incorrectly reject 9223372036854775807.  */
+-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
++#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+ 		       && LARGE_OFF_T % 2147483647 == 1)
+ 		      ? 1 : -1];
+@@ -5219,7 +5231,7 @@
+     We can't simply define LARGE_OFF_T to be 9223372036854775807,
+     since some C++ compilers masquerading as C compilers
+     incorrectly reject 9223372036854775807.  */
+-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
++#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
+   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+ 		       && LARGE_OFF_T % 2147483647 == 1)
+ 		      ? 1 : -1];
+@@ -12280,7 +12292,7 @@
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 12283 "configure"
++#line 12295 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -12386,7 +12398,7 @@
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 12389 "configure"
++#line 12401 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -16182,7 +16194,7 @@
+   # Fake what AC_TRY_COMPILE does.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16185 "configure"
++#line 16197 "configure"
+ int main()
+ {
+   typedef bool atomic_type;
+@@ -16217,7 +16229,7 @@
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16220 "configure"
++#line 16232 "configure"
+ int main()
+ {
+   typedef short atomic_type;
+@@ -16252,7 +16264,7 @@
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16255 "configure"
++#line 16267 "configure"
+ int main()
+ {
+   // NB: _Atomic_word not necessarily int.
+@@ -16288,7 +16300,7 @@
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16291 "configure"
++#line 16303 "configure"
+ int main()
+ {
+   typedef long long atomic_type;
+@@ -50610,7 +50622,6 @@
+ 
+     ;;
+   *)
+-    as_fn_error $? "No support for this host/target combination." "$LINENO" 5
+    ;;
+ esac
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/configure.host gcc-15.1.0-irix/libstdc++-v3/configure.host
+--- gcc-15.1.0/libstdc++-v3/configure.host	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/configure.host	2025-04-26 06:25:08.500854103 +0000
+@@ -280,6 +280,17 @@
+   hpux*)
+     os_include_dir="os/hpux"
+     ;;
++  irix[1-6] | irix[1-5].* | irix6.[0-4]*)
++    # This is known to work on at least IRIX 5.2 and 6.3.
++    os_include_dir="os/irix/irix5.2"
++    atomicity_dir=os/irix
++    atomic_word_dir=os/irix
++    ;;
++  irix6.5*)
++    os_include_dir="os/irix/irix6.5"
++    atomicity_dir=os/irix
++    atomic_word_dir=os/irix
++    ;;
+   mingw32*)
+     case "$host" in
+       *-w64-*)
+diff -Nur gcc-15.1.0/libstdc++-v3/crossconfig.m4 gcc-15.1.0-irix/libstdc++-v3/crossconfig.m4
+--- gcc-15.1.0/libstdc++-v3/crossconfig.m4	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/crossconfig.m4	2025-04-26 06:25:08.500854103 +0000
+@@ -299,6 +299,8 @@
+ dnl # long_double_math_on_this_cpu in configure.ac, right after
+ dnl # the expansion of the present macro.
+     ;;
++  mips-sgi-irix*)
++    ;;
+   *)
+     AC_MSG_ERROR([No support for this host/target combination.])
+    ;;
+diff -Nur gcc-15.1.0/libstdc++-v3/doc/Makefile.in gcc-15.1.0-irix/libstdc++-v3/doc/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/doc/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/doc/Makefile.in	2025-04-26 06:25:08.501854208 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -131,7 +131,7 @@
+ am__v_at_0 = @
+ am__v_at_1 = 
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ SOURCES =
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+@@ -178,7 +178,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -200,6 +202,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -687,8 +690,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/include/Makefile.in gcc-15.1.0-irix/libstdc++-v3/include/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/include/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/include/Makefile.in	2025-04-26 06:25:08.501854208 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -131,7 +131,7 @@
+ am__v_at_0 = @
+ am__v_at_1 = 
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ SOURCES =
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+@@ -178,7 +178,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -200,6 +202,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -1488,8 +1491,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/libsupc++/Makefile.in gcc-15.1.0-irix/libstdc++-v3/libsupc++/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/libsupc++/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/libsupc++/Makefile.in	2025-04-26 06:25:08.501854208 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -196,7 +196,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ AM_V_CC = $(am__v_CC_@AM_V@)
+@@ -246,8 +246,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -287,7 +285,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -309,6 +309,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -686,8 +687,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/po/Makefile.in gcc-15.1.0-irix/libstdc++-v3/po/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/po/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/po/Makefile.in	2025-04-26 06:25:08.501854208 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -131,7 +131,7 @@
+ am__v_at_0 = @
+ am__v_at_1 = 
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ SOURCES =
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+@@ -178,7 +178,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -200,6 +202,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -416,8 +419,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/python/Makefile.in gcc-15.1.0-irix/libstdc++-v3/python/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/python/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/python/Makefile.in	2025-04-26 06:25:08.502854314 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -132,7 +132,7 @@
+ am__v_at_0 = @
+ am__v_at_1 = 
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ SOURCES =
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+@@ -208,7 +208,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -230,6 +232,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -439,8 +442,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/Makefile.in	2025-04-26 06:25:08.502854314 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -185,7 +185,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_lt = $(am__v_lt_@AM_V@)
+@@ -239,8 +239,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ DIST_SUBDIRS = c++98 c++11 c++17 c++20 c++23 c++26 filesystem \
+ 	libbacktrace experimental
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+@@ -282,7 +280,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -304,6 +304,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -711,8 +712,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++11/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++11/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/c++11/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++11/Makefile.in	2025-04-26 06:25:08.502854314 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -175,7 +175,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -210,8 +210,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -251,7 +249,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -273,6 +273,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -638,8 +639,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++17/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++17/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/c++17/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++17/Makefile.in	2025-04-26 06:25:08.502854314 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -149,7 +149,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -184,8 +184,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -225,7 +223,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -247,6 +247,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -543,8 +544,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++17/floating_to_chars.cc gcc-15.1.0-irix/libstdc++-v3/src/c++17/floating_to_chars.cc
+--- gcc-15.1.0/libstdc++-v3/src/c++17/floating_to_chars.cc	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++17/floating_to_chars.cc	2025-04-26 06:25:08.502854314 +0000
+@@ -709,6 +709,8 @@
+   {
+     __glibcxx_assert(precision >= 0);
+ 
++    return nullopt;
++/*
+     string_view str;
+     switch (__builtin_fpclassify(FP_NAN, FP_INFINITE, FP_NORMAL, FP_SUBNORMAL,
+ 				 FP_ZERO, value))
+@@ -798,6 +800,7 @@
+       }
+     __glibcxx_assert(first - orig_first == expected_output_length);
+     return {{first, errc{}}};
++ */
+   }
+ 
+ template<>
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++20/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++20/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/c++20/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++20/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -144,7 +144,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -179,8 +179,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -220,7 +218,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -242,6 +242,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -520,8 +521,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++23/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++23/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/c++23/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++23/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -145,7 +145,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -210,8 +210,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -251,7 +249,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -273,6 +273,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -555,8 +556,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++26/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++26/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/c++26/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++26/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -144,7 +144,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -179,8 +179,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -220,7 +218,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -242,6 +242,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -518,8 +519,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/c++98/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++98/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/c++98/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++98/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -164,7 +164,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -199,8 +199,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -240,7 +238,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -262,6 +262,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -614,8 +615,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/experimental/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/experimental/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/experimental/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/experimental/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -171,7 +171,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -206,8 +206,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -247,7 +245,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -269,6 +269,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -555,8 +556,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/filesystem/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/filesystem/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/filesystem/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/filesystem/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -176,7 +176,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+ 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+ AM_V_CXX = $(am__v_CXX_@AM_V@)
+@@ -212,8 +212,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -253,7 +251,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -275,6 +275,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -561,8 +562,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/src/libbacktrace/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/libbacktrace/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/src/libbacktrace/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/libbacktrace/Makefile.in	2025-04-26 06:25:08.503854419 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -176,7 +176,7 @@
+ am__v_at_1 = 
+ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ AM_V_CC = $(am__v_CC_@AM_V@)
+@@ -212,8 +212,6 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-ETAGS = etags
+-CTAGS = ctags
+ ABI_TWEAKS_SRCDIR = @ABI_TWEAKS_SRCDIR@
+ ACLOCAL = @ACLOCAL@
+ ALLOCATOR_H = @ALLOCATOR_H@
+@@ -253,7 +251,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -275,6 +275,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -552,8 +553,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+diff -Nur gcc-15.1.0/libstdc++-v3/testsuite/Makefile.in gcc-15.1.0-irix/libstdc++-v3/testsuite/Makefile.in
+--- gcc-15.1.0/libstdc++-v3/testsuite/Makefile.in	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/testsuite/Makefile.in	2025-04-26 06:25:08.504854525 +0000
+@@ -1,7 +1,7 @@
+-# Makefile.in generated by automake 1.15.1 from Makefile.am.
++# Makefile.in generated by automake 1.16.5 from Makefile.am.
+ # @configure_input@
+ 
+-# Copyright (C) 1994-2017 Free Software Foundation, Inc.
++# Copyright (C) 1994-2021 Free Software Foundation, Inc.
+ 
+ # This Makefile.in is free software; the Free Software Foundation
+ # gives unlimited permission to copy and/or distribute it,
+@@ -131,7 +131,7 @@
+ am__v_at_0 = @
+ am__v_at_1 = 
+ depcomp =
+-am__depfiles_maybe =
++am__maybe_remake_depfiles =
+ SOURCES =
+ am__can_run_installinfo = \
+   case $$AM_UPDATE_INFO_DIR in \
+@@ -178,7 +178,9 @@
+ CPU_DEFINES_SRCDIR = @CPU_DEFINES_SRCDIR@
+ CPU_OPT_BITS_RANDOM = @CPU_OPT_BITS_RANDOM@
+ CPU_OPT_EXT_RANDOM = @CPU_OPT_EXT_RANDOM@
++CSCOPE = @CSCOPE@
+ CSTDIO_H = @CSTDIO_H@
++CTAGS = @CTAGS@
+ CTIME_CC = @CTIME_CC@
+ CTIME_H = @CTIME_H@
+ CXX = @CXX@
+@@ -200,6 +202,7 @@
+ EGREP = @EGREP@
+ EH_POOL_FLAGS = @EH_POOL_FLAGS@
+ ERROR_CONSTANTS_SRCDIR = @ERROR_CONSTANTS_SRCDIR@
++ETAGS = @ETAGS@
+ EXEEXT = @EXEEXT@
+ EXTRA_CFLAGS = @EXTRA_CFLAGS@
+ EXTRA_CXX_FLAGS = @EXTRA_CXX_FLAGS@
+@@ -454,8 +457,8 @@
+ 	  *config.status*) \
+ 	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+ 	  *) \
+-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
+-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
++	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
++	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+ 	esac;
+ $(top_srcdir)/fragment.am $(am__empty):
+ 
+Binary files gcc-15.1.0/mpc-1.2.1.tar.gz and gcc-15.1.0-irix/mpc-1.2.1.tar.gz differ
+Binary files gcc-15.1.0/mpfr-4.1.0.tar.bz2 and gcc-15.1.0-irix/mpfr-4.1.0.tar.bz2 differ
+diff -Nur gcc-15.1.0/zlib/zconf.h gcc-15.1.0-irix/zlib/zconf.h
+--- gcc-15.1.0/zlib/zconf.h	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/zlib/zconf.h	2025-04-26 06:25:08.504854525 +0000
+@@ -547,4 +547,8 @@
+ #endif
+ #endif
+ 
++#if defined(sgi)
++#define NO_vsnprintf
++#endif
++
+ #endif /* ZCONF_H */

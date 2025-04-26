@@ -1,0 +1,12 @@
+diff -Nur gmp-6.2.1/gmp-impl.h gmp-6.2.1-new/gmp-impl.h
+--- gmp-6.2.1/gmp-impl.h	2020-11-14 18:45:09.000000000 +0000
++++ gmp-6.2.1-new/gmp-impl.h	2025-04-21 06:01:42.001622711 +0000
+@@ -230,7 +230,7 @@
+ 
+ /* gmp_uint_least32_t is an unsigned integer type with at least 32 bits. */
+ #if HAVE_UINT_LEAST32_T
+-typedef uint_least32_t      gmp_uint_least32_t;
++typedef uint32_t      gmp_uint_least32_t;
+ #else
+ #if SIZEOF_UNSIGNED_SHORT >= 4
+ typedef unsigned short      gmp_uint_least32_t;

@@ -1,11 +1,14 @@
 #!/bin/bash
 
+set -ex
+
 cd $(dirname $0)
 
 TOPDIR=$PWD
 
 MAKE_TASKS=5
 
+CROSS_INST=/opt/cross-irix-o32-gcc
 TARGET_INST=/opt/irix-o32-gcc
 
 GCC_VERSION=15.1.0
@@ -16,6 +19,8 @@ error() {
     echo "ERROR: $@"
     exit 1
 }
+
+export PATH=${CROSS_INST}/bin:$PATH
 
 cd tmp
 

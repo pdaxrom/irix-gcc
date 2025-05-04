@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 cd $(dirname $0)
 
 TOPDIR=$PWD
@@ -20,7 +22,7 @@ error() {
 mkdir -p ${CROSS_INST}/sysroot || error "Make sysroot directory"
 tar xf files/dev.tar.gz -C ${CROSS_INST}/sysroot || error "Unpack sysroot"
 
-mkdir tmp
+mkdir -p tmp
 cd tmp
 test -f binutils-${BINUTILS_VERSION}.tar.bz2 ||  wget https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2 || error "Can't download binutils"
 test -f gcc-${GCC_VERSION}.tar.xz || wget https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz || error "Can't download gcc"

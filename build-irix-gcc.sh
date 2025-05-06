@@ -11,8 +11,11 @@ MAKE_TASKS=5
 CROSS_INST=/opt/cross-irix-o32-gcc
 TARGET_INST=/opt/irix-o32-gcc
 
-GCC_VERSION=15.1.0
-BINUTILS_VERSION=2.19.1
+if test -e "$1"; then
+    source "$1"
+else
+    source ${TOPDIR}/config.inc
+fi
 
 error() {
     shift

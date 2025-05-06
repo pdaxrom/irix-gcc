@@ -1,0 +1,259 @@
+diff -Nur gcc-4.5.4/gcc/config/mips/iris6.h gcc-4.5.4-irix/gcc/config/mips/iris6.h
+--- gcc-4.5.4/gcc/config/mips/iris6.h	2010-01-12 07:38:49.000000000 -0500
++++ gcc-4.5.4-irix/gcc/config/mips/iris6.h	2025-05-06 11:16:36.781608745 -0400
+@@ -25,13 +25,13 @@
+ 
+ /* Default to -mabi=n32 and -mips3.  */
+ #undef MULTILIB_DEFAULTS
+-#define MULTILIB_DEFAULTS { "mabi=n32" }
++#define MULTILIB_DEFAULTS { "mabi=32" }
+ 
+ /* Force the default ABI onto the command line in order to make the specs
+    easier to write.  Default to the mips2 ISA for the O32 ABI.  */
+ #undef DRIVER_SELF_SPECS
+ #define DRIVER_SELF_SPECS 			\
+-  "%{!mabi=*: -mabi=n32}", 			\
++  "%{!mabi=*: -mabi=32}", 			\
+   "%{mabi=32: %{!mips*: %{!march*: -mips2}}}", 	\
+   /* Configuration-independent MIPS rules.  */	\
+   BASE_DRIVER_SELF_SPECS
+@@ -88,27 +88,27 @@
+      %{mabi=32:%{pg:gcrt1.o%s} \
+        %{!pg:%{p:mcrt1.o%s libprof1.a%s}%{!p:crt1.o%s}}} \
+      %{mabi=n32: \
+-       %{mips4:%{pg:/usr/lib32/mips4/gcrt1.o%s} \
+-         %{!pg:%{p:/usr/lib32/mips4/mcrt1.o%s /usr/lib32/mips4/libprof1.a%s} \
+-           %{!p:/usr/lib32/mips4/crt1.o%s}}} \
+-       %{!mips4:%{pg:/usr/lib32/mips3/gcrt1.o%s} \
+-         %{!pg:%{p:/usr/lib32/mips3/mcrt1.o%s /usr/lib32/mips3/libprof1.a%s} \
+-           %{!p:/usr/lib32/mips3/crt1.o%s}}}} \
++       %{mips4:%{pg:"TARGET_SYSTEM_ROOT"/usr/lib32/mips4/gcrt1.o%s} \
++         %{!pg:%{p:"TARGET_SYSTEM_ROOT"/usr/lib32/mips4/mcrt1.o%s "TARGET_SYSTEM_ROOT"/usr/lib32/mips4/libprof1.a%s} \
++           %{!p:"TARGET_SYSTEM_ROOT"/usr/lib32/mips4/crt1.o%s}}} \
++       %{!mips4:%{pg:"TARGET_SYSTEM_ROOT"/usr/lib32/mips3/gcrt1.o%s} \
++         %{!pg:%{p:"TARGET_SYSTEM_ROOT"/usr/lib32/mips3/mcrt1.o%s "TARGET_SYSTEM_ROOT"/usr/lib32/mips3/libprof1.a%s} \
++           %{!p:"TARGET_SYSTEM_ROOT"/usr/lib32/mips3/crt1.o%s}}}} \
+      %{mabi=64: \
+-       %{mips4:%{pg:/usr/lib64/mips4/gcrt1.o} \
+-         %{!pg:%{p:/usr/lib64/mips4/mcrt1.o /usr/lib64/mips4/libprof1.a} \
+-           %{!p:/usr/lib64/mips4/crt1.o}}} \
+-       %{!mips4:%{pg:/usr/lib64/mips3/gcrt1.o} \
+-         %{!pg:%{p:/usr/lib64/mips3/mcrt1.o /usr/lib64/mips3/libprof1.a} \
+-           %{!p:/usr/lib64/mips3/crt1.o}}}}} \
++       %{mips4:%{pg:"TARGET_SYSTEM_ROOT"/usr/lib64/mips4/gcrt1.o} \
++         %{!pg:%{p:"TARGET_SYSTEM_ROOT"/usr/lib64/mips4/mcrt1.o "TARGET_SYSTEM_ROOT"/usr/lib64/mips4/libprof1.a} \
++           %{!p:"TARGET_SYSTEM_ROOT"/usr/lib64/mips4/crt1.o}}} \
++       %{!mips4:%{pg:"TARGET_SYSTEM_ROOT"/usr/lib64/mips3/gcrt1.o} \
++         %{!pg:%{p:"TARGET_SYSTEM_ROOT"/usr/lib64/mips3/mcrt1.o "TARGET_SYSTEM_ROOT"/usr/lib64/mips3/libprof1.a} \
++           %{!p:"TARGET_SYSTEM_ROOT"/usr/lib64/mips3/crt1.o}}}}} \
+   irix-crti.o%s crtbegin.o%s"
+ 
+ #undef LIB_SPEC
+ #define LIB_SPEC \
+-  "%{mabi=n32: %{mips4:-L/usr/lib32/mips4} %{!mips4:-L/usr/lib32/mips3} \
+-     -L/usr/lib32} \
+-   %{mabi=64: %{mips4:-L/usr/lib64/mips4} %{!mips4:-L/usr/lib64/mips3} \
+-     -L/usr/lib64} \
++  "%{mabi=n32: %{mips4:-L"TARGET_SYSTEM_ROOT"/usr/lib32/mips4} %{!mips4:-L"TARGET_SYSTEM_ROOT"/usr/lib32/mips3} \
++     } \
++   %{mabi=64: %{mips4:-L"TARGET_SYSTEM_ROOT"/usr/lib64/mips4} %{!mips4:-L"TARGET_SYSTEM_ROOT"/usr/lib64/mips3} \
++     } \
+    %{!shared:" \
+      SUBTARGET_DONT_WARN_UNUSED_SPEC \
+      " %{pthread:-lpthread} %{p:libprof1.a%s}%{pg:libprof1.a%s} -lc " \
+@@ -125,10 +125,10 @@
+   "crtend.o%s irix-crtn.o%s \
+    %{!shared: \
+      %{mabi=32:crtn.o%s}\
+-     %{mabi=n32:%{mips4:/usr/lib32/mips4/crtn.o%s}\
+-       %{!mips4:/usr/lib32/mips3/crtn.o%s}}\
+-     %{mabi=64:%{mips4:/usr/lib64/mips4/crtn.o%s}\
+-       %{!mips4:/usr/lib64/mips3/crtn.o%s}}}"
++     %{mabi=n32:%{mips4:"TARGET_SYSTEM_ROOT"/usr/lib32/mips4/crtn.o%s}\
++       %{!mips4:"TARGET_SYSTEM_ROOT"/usr/lib32/mips3/crtn.o%s}}\
++     %{mabi=64:%{mips4:"TARGET_SYSTEM_ROOT"/usr/lib64/mips4/crtn.o%s}\
++       %{!mips4:"TARGET_SYSTEM_ROOT"/usr/lib64/mips3/crtn.o%s}}}"
+ 
+ #define MIPS_TFMODE_FORMAT mips_extended_format
+ 
+diff -Nur gcc-4.5.4/gcc/config/mips/t-iris6 gcc-4.5.4-irix/gcc/config/mips/t-iris6
+--- gcc-4.5.4/gcc/config/mips/t-iris6	2009-04-21 15:03:23.000000000 -0400
++++ gcc-4.5.4-irix/gcc/config/mips/t-iris6	2025-05-06 09:37:08.000000000 -0400
+@@ -17,10 +17,10 @@
+ # along with GCC; see the file COPYING3.  If not see
+ # <http://www.gnu.org/licenses/>.
+ 
+-MULTILIB_OPTIONS=mabi=n32/mabi=32/mabi=64
+-MULTILIB_DIRNAMES=n32 32 64
++MULTILIB_OPTIONS=mabi=n32/mabi=32
++MULTILIB_DIRNAMES=n32 32
+ MULTILIB_MATCHES=
+-MULTILIB_OSDIRNAMES=../lib32 ../lib ../lib64
++MULTILIB_OSDIRNAMES=../lib32 ../lib
+ 
+ LIBGCC = stmp-multilib
+ INSTALL_LIBGCC = install-multilib
+diff -Nur gcc-4.5.4/gcc/gthr-posix.h gcc-4.5.4-irix/gcc/gthr-posix.h
+--- gcc-4.5.4/gcc/gthr-posix.h	2011-01-29 15:36:39.000000000 -0500
++++ gcc-4.5.4-irix/gcc/gthr-posix.h	2025-05-06 09:37:08.000000000 -0400
+@@ -121,11 +121,11 @@
+ 
+ __gthrw(pthread_create)
+ __gthrw(pthread_join)
+-__gthrw(pthread_equal)
++//__gthrw(pthread_equal)
+ __gthrw(pthread_self)
+ __gthrw(pthread_detach)
+ __gthrw(pthread_cancel)
+-__gthrw(sched_yield)
++//__gthrw(sched_yield)
+ 
+ __gthrw(pthread_mutex_lock)
+ __gthrw(pthread_mutex_trylock)
+@@ -148,7 +148,7 @@
+ __gthrw(pthread_key_create)
+ __gthrw(pthread_key_delete)
+ __gthrw(pthread_mutexattr_init)
+-__gthrw(pthread_mutexattr_settype)
++//__gthrw(pthread_mutexattr_settype)
+ __gthrw(pthread_mutexattr_destroy)
+ 
+ 
+@@ -664,11 +664,11 @@
+   return __gthrw_(pthread_detach) (__threadid);
+ }
+ 
+-static inline int
+-__gthread_equal (__gthread_t __t1, __gthread_t __t2)
+-{
+-  return __gthrw_(pthread_equal) (__t1, __t2);
+-}
++//static inline int
++//__gthread_equal (__gthread_t __t1, __gthread_t __t2)
++//{
++//  return __gthrw_(pthread_equal) (__t1, __t2);
++//}
+ 
+ static inline __gthread_t
+ __gthread_self (void)
+@@ -676,11 +676,11 @@
+   return __gthrw_(pthread_self) ();
+ }
+ 
+-static inline int
+-__gthread_yield (void)
+-{
+-  return __gthrw_(sched_yield) ();
+-}
++//static inline int
++//__gthread_yield (void)
++//{
++//  return __gthrw_(sched_yield) ();
++//}
+ 
+ static inline int
+ __gthread_once (__gthread_once_t *__once, void (*__func) (void))
+@@ -775,9 +775,9 @@
+       int __r;
+ 
+       __r = __gthrw_(pthread_mutexattr_init) (&__attr);
+-      if (!__r)
+-	__r = __gthrw_(pthread_mutexattr_settype) (&__attr,
+-						   PTHREAD_MUTEX_RECURSIVE);
++//      if (!__r)
++//	__r = __gthrw_(pthread_mutexattr_settype) (&__attr,
++//						   PTHREAD_MUTEX_RECURSIVE);
+       if (!__r)
+ 	__r = __gthrw_(pthread_mutex_init) (__mutex, &__attr);
+       if (!__r)
+diff -Nur gcc-4.5.4/libstdc++-v3/configure gcc-4.5.4-irix/libstdc++-v3/configure
+--- gcc-4.5.4/libstdc++-v3/configure	2010-08-27 14:25:00.000000000 -0400
++++ gcc-4.5.4-irix/libstdc++-v3/configure	2025-05-06 10:24:40.000000000 -0400
+@@ -1877,9 +1877,9 @@
+ if { as_var=$3; eval "test \"\${$as_var+set}\" = set"; }; then :
+   $as_echo_n "(cached) " >&6
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
++#  if test x$gcc_no_link = xyes; then
++#  as_fn_error "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
++#fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ /* Define $2 to an innocuous variant, in case <limits.h> declares $2.
+@@ -11229,9 +11229,9 @@
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-ldld  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
++#if test x$gcc_no_link = xyes; then
++#  as_fn_error "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
++#fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -57476,6 +57476,61 @@
+     $as_echo "#define HAVE_TANHF 1" >>confdefs.h
+ 
+     ;;
++  *-irix5* | *-irix6*)
++    $as_echo "#define HAVE_ISNAN 1" >>confdefs.h
++
++    $as_echo "#define HAVE_FINITE 1" >>confdefs.h
++
++    $as_echo "#define HAVE_FPCLASS 1" >>confdefs.h
++
++    $as_echo "#define HAVE_HYPOT 1" >>confdefs.h
++
++    $as_echo "#define HAVE_ACOSF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_ASINF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_ATANF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_COSF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_SINF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_TANF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_COSHF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_SINHF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_TANHF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_CEILF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_FLOORF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_EXPF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_ISNANF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_ATAN2F 1" >>confdefs.h
++
++    $as_echo "#define HAVE_FABSF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_FMODF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_HYPOTF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_LOGF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_LOG10F 1" >>confdefs.h
++
++    $as_echo "#define HAVE_MODFF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_MODF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_POWF 1" >>confdefs.h
++
++    $as_echo "#define HAVE_SQRTF 1" >>confdefs.h
++    ;;
+   *)
+     as_fn_error "No support for this host/target combination." "$LINENO" 5
+    ;;

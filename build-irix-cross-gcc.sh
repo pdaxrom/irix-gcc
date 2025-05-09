@@ -6,7 +6,7 @@ cd $(dirname $0)
 
 TOPDIR=$PWD
 
-MAKE_TASKS=5
+MAKE_TASKS=15
 
 CROSS_INST=/opt/cross-irix-o32-gcc
 
@@ -16,9 +16,7 @@ else
     source ${TOPDIR}/config.inc
 fi
 
-if [ "$TARGET_TRIPLET" = "" ]; then
-    TARGET_TRIPLET=mips-sgi-irix5
-fi
+TARGET_TRIPLET=${TARGET_TRIPLET:-mips-sgi-irix6o32}
 
 echo "Build for ${TARGET_TRIPLET}"
 
@@ -33,10 +31,12 @@ tar xf files/irix62-dev.tar.bz2 -C ${CROSS_INST}/sysroot
 
 mkdir -p tmp
 cd tmp
-test -f binutils-${BINUTILS_VERSION}.tar.bz2 ||  wget ${WGET_OPTS} https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2
-test -f gcc-${GCC_VERSION}.tar.bz2 || wget ${WGET_OPTS} https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2
-tar xf binutils-${BINUTILS_VERSION}.tar.bz2
-tar xf gcc-${GCC_VERSION}.tar.bz2
+BINUTILS_EXT=${BINUTILS_EXT:-xz}
+GCC_EXT=${GCC_EXT:-xz}
+test -f binutils-${BINUTILS_VERSION}.tar.${BINUTILS_EXT} ||  wget ${WGET_OPTS} https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.${BINUTILS_EXT}
+test -f gcc-${GCC_VERSION}.tar.${GCC_EXT} || wget ${WGET_OPTS} https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.${GCC_EXT}
+tar xf binutils-${BINUTILS_VERSION}.tar.${BINUTILS_EXT}
+tar xf gcc-${GCC_VERSION}.tar.${GCC_EXT}
 
 cd binutils-${BINUTILS_VERSION}
 
@@ -83,7 +83,7 @@ mkdir -p build-cross build
 
 cd build-cross
 
-../configure --prefix=${CROSS_INST} --target=${TARGET_TRIPLET} --without-nls --with-sysroot=${CROSS_INST}/sysroot --with-gnu-as --with-gnu-ld --disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins ${GCC_CONF_OPTS}
+../configure --prefix=${CROSS_INST} --target=${TARGET_TRIPLET} --without-nls --with-sysroot=${CROSS_INST}/sysroot --with-gnu-as --with-gnu-ld ${GCC_CONF_OPTS}
 
 make -j $MAKE_TASKS
 

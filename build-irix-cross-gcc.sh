@@ -8,7 +8,7 @@ TOPDIR=$PWD
 
 MAKE_TASKS=15
 
-CROSS_INST=/opt/cross-irix-o32-gcc
+CROSS_INST=/opt/cross-irix-gcc-o32
 
 if test -e "$1"; then
     source "$1"

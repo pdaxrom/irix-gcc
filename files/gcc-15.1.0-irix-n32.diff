@@ -1,0 +1,19 @@
+diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix-n32/gcc/config/mips/iris6.h
+--- gcc-15.1.0/gcc/config/mips/iris6.h	2025-05-20 15:24:25.935683963 +0000
++++ gcc-15.1.0-irix-n32/gcc/config/mips/iris6.h	2025-05-20 15:27:16.220989401 +0000
+@@ -25,13 +25,13 @@
+ 
+ /* Default to -mabi=n32 and -mips3.  */
+ #undef MULTILIB_DEFAULTS
+-#define MULTILIB_DEFAULTS { "mabi=32" }
++#define MULTILIB_DEFAULTS { "mabi=n32" }
+ 
+ /* Force the default ABI onto the command line in order to make the specs
+    easier to write.  Default to the mips2 ISA for the O32 ABI.  */
+ #undef DRIVER_SELF_SPECS
+ #define DRIVER_SELF_SPECS 			\
+-  "%{!mabi=*: -mabi=32}", 			\
++  "%{!mabi=*: -mabi=n32}", 			\
+   "%{mabi=32: %{!mips*: %{!march*: -mips2}}}", 	\
+   "%{mabi=n32: %{!mips*: %{!march*: -mips3}}}",	\
+   /* Configuration-independent MIPS rules.  */	\

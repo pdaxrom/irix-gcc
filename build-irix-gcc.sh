@@ -6,13 +6,20 @@ cd $(dirname $0)
 
 TOPDIR=$PWD
 
-MAKE_TASKS=5
+MAKE_TASKS=15
 
-CROSS_INST=/opt/cross-irix-o32-gcc
-TARGET_INST=/opt/irix-o32-gcc
+CROSS_INST=/opt/cross-irix-gcc-o32
+TARGET_INST=/opt/irix-gcc-o32
 
-GCC_VERSION=15.1.0
-BINUTILS_VERSION=2.19.1
+if test -e "$1"; then
+    source "$1"
+else
+    source ${TOPDIR}/config.inc
+fi
+
+TARGET_TRIPLET=${TARGET_TRIPLET:-mips-sgi-irix6o32}
+
+echo "Build for ${TARGET_TRIPLET}"
 
 error() {
     shift
@@ -30,14 +37,14 @@ mkdir -p build
 
 cd build
 
-../configure --prefix=${TARGET_INST} --target=mips-sgi-irix5 --host=mips-sgi-irix5 -build=x86_64-linux-gnu --without-nls --disable-werror --enable-shared
+eval ../configure --prefix=${TARGET_INST} --target=${TARGET_TRIPLET} --host=${TARGET_TRIPLET} --without-nls --disable-werror --enable-shared ${BINUTILS_CONF_OPTS}
 
 make -j $MAKE_TASKS || error "Build binutils"
 
 make install || error "Install binutils"
 
-mips-sgi-irix5-strip ${TARGET_INST}/bin/* || true
-mips-sgi-irix5-strip ${TARGET_INST}/mips-sgi-irix5/bin/* || true
+${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/* || true
+${TARGET_TRIPLET}-strip ${TARGET_INST}/${TARGET_TRIPLET}/bin/* || true
 
 cd ../..
 
@@ -52,10 +59,9 @@ cat > gcc/config.cache <<EOF
 ac_cv_c_bigendian=${ac_cv_c_bigendian=yes}
 EOF
 
-../configure --prefix=${TARGET_INST} --host=mips-sgi-irix5 -build=x86_64-linux-gnu --without-nls --with-gnu-as --with-gnu-ld --disable-libssp \
- --enable-languages=c,c++ --disable-nls --enable-pgo-build=no --enable-lto=no --enable-shared \
- CC_FOR_TARGET=mips-sgi-irix5-gcc \
- CXX_FOR_TARGET=mips-sgi-irix5-g++
+eval ../configure --prefix=${TARGET_INST} --host=${TARGET_TRIPLET} --without-nls --with-gnu-as --with-gnu-ld --enable-shared ${GCC_CONF_OPTS} \
+ CC_FOR_TARGET=${TARGET_TRIPLET}-gcc \
+ CXX_FOR_TARGET=${TARGET_TRIPLET}-g++
 
 make -j $MAKE_TASKS || error "Build gcc"
 
@@ -63,8 +69,10 @@ make install-strip || error "Install gcc"
 
 cd ../..
 
-tar zcf irix-o32-gcc.tar.gz ${TARGET_INST}
+OUT_FILENAME=$(basename ${TARGET_INST})
 
-test -d /out && cp -f irix-o32-gcc.tar.gz /out
+tar zcf ${OUT_FILENAME}.tar.gz ${TARGET_INST}
+
+test -d /out && cp -f ${OUT_FILENAME}.tar.gz /out
 
 echo "Done"

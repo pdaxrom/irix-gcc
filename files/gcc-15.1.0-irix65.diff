@@ -1,0 +1,17 @@
+diff -Nur gcc-15.1.0-irix/gcc/config/mips/iris.h gcc-15.1.0-irix65/gcc/config/mips/iris.h
+--- gcc-15.1.0-irix/gcc/config/mips/iris.h	2025-05-20 16:10:39.022919649 +0000
++++ gcc-15.1.0-irix65/gcc/config/mips/iris.h	2025-05-20 16:10:43.325149071 +0000
+@@ -153,9 +153,12 @@
+       /* IRIX 6.5.18 and above provide many ISO C99		\
+ 	 features protected by the __c99 macro.			\
+ 	 libstdc++ v3 needs them as well.  */			\
+-      if (TARGET_IRIX6)						\
++      if (TARGET_IRIX6) {					\
+ 	if (flag_isoc99 || c_dialect_cxx ())			\
+ 	  builtin_define ("__c99");				\
++	if (flag_isoc99 || c_dialect_cxx ())			\
++	  builtin_define ("restrict=");				\
++      }								\
+ 								\
+       /* The GNU C++ standard library requires that		\
+ 	 __EXTENSIONS__ and _SGI_SOURCE be defined on at	\

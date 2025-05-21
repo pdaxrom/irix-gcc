@@ -1,6 +1,6 @@
 diff -Nur binutils-2.19.1/binutils/readelf.c binutils-2.19.1-irix/binutils/readelf.c
 --- binutils-2.19.1/binutils/readelf.c	2008-09-17 09:00:44.000000000 +0000
-+++ binutils-2.19.1-irix/binutils/readelf.c	2025-04-26 05:35:59.793977520 +0000
++++ binutils-2.19.1-irix/binutils/readelf.c	2025-05-06 20:33:19.000000000 +0000
 @@ -165,7 +165,7 @@
  #include "safe-ctype.h"
  
@@ -10,9 +10,34 @@ diff -Nur binutils-2.19.1/binutils/readelf.c binutils-2.19.1-irix/binutils/reade
  static long archive_file_offset;
  static unsigned long archive_file_size;
  static unsigned long dynamic_addr;
+diff -Nur binutils-2.19.1/configure binutils-2.19.1-irix/configure
+--- binutils-2.19.1/configure	2008-09-04 02:18:16.000000000 +0000
++++ binutils-2.19.1-irix/configure	2025-05-06 20:33:19.000000000 +0000
+@@ -5507,6 +5507,8 @@
+ if test x${with_stabs} = x ; then
+   case "${target}" in
+   mips*-*-irix[56]*)
++    with_stabs=yes;
++    extra_host_args="${extra_host_args} --with-stabs"
+     ;;
+   mips*-*-* | alpha*-*-osf*)
+     with_stabs=yes;
+diff -Nur binutils-2.19.1/gas/configure binutils-2.19.1-irix/gas/configure
+--- binutils-2.19.1/gas/configure	2008-08-24 03:13:05.000000000 +0000
++++ binutils-2.19.1-irix/gas/configure	2025-05-08 16:04:25.579910148 +0000
+@@ -11121,6 +11121,9 @@
+ 	esac
+ 	# Decide which ABI to target by default.
+ 	case ${target} in
++	  mips-sgi-irix6*o32)
++	    mips_default_abi=NO_ABI
++	    ;;
+ 	  mips64*-linux* | mips-sgi-irix6*)
+ 	    mips_default_abi=N32_ABI
+ 	    ;;
 diff -Nur binutils-2.19.1/gas/dwarf2dbg.h binutils-2.19.1-irix/gas/dwarf2dbg.h
 --- binutils-2.19.1/gas/dwarf2dbg.h	2007-11-19 19:37:18.000000000 +0000
-+++ binutils-2.19.1-irix/gas/dwarf2dbg.h	2025-04-26 05:35:59.802977704 +0000
++++ binutils-2.19.1-irix/gas/dwarf2dbg.h	2025-05-06 20:33:19.000000000 +0000
 @@ -81,12 +81,12 @@
  
  /* True when we've seen a .loc directive recently.  Used to avoid
@@ -30,7 +55,7 @@ diff -Nur binutils-2.19.1/gas/dwarf2dbg.h binutils-2.19.1-irix/gas/dwarf2dbg.h
  
 diff -Nur binutils-2.19.1/intl/dcigettext.c binutils-2.19.1-irix/intl/dcigettext.c
 --- binutils-2.19.1/intl/dcigettext.c	2006-05-22 15:30:13.000000000 +0000
-+++ binutils-2.19.1-irix/intl/dcigettext.c	2025-04-26 06:19:27.576598131 +0000
++++ binutils-2.19.1-irix/intl/dcigettext.c	2025-05-06 20:33:19.000000000 +0000
 @@ -148,7 +148,7 @@
  char *getwd ();
  #  define getcwd(buf, max) getwd (buf)
@@ -42,7 +67,7 @@ diff -Nur binutils-2.19.1/intl/dcigettext.c binutils-2.19.1-irix/intl/dcigettext
  static char *stpcpy PARAMS ((char *dest, const char *src));
 diff -Nur binutils-2.19.1/irix-conf.sh binutils-2.19.1-irix/irix-conf.sh
 --- binutils-2.19.1/irix-conf.sh	1970-01-01 00:00:00.000000000 +0000
-+++ binutils-2.19.1-irix/irix-conf.sh	2025-04-26 05:35:59.802977704 +0000
++++ binutils-2.19.1-irix/irix-conf.sh	2025-05-06 20:33:19.000000000 +0000
 @@ -0,0 +1,5 @@
 +Cross:
 +../configure --prefix=/opt/cross-irix5-new --target=mips-sgi-irix5 --without-nls --disable-werror --with-sysroot=/opt/cross-irix5-new/sysroot --disable-pgo-build --enable-lto=no --disable-plugins

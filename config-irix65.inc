@@ -1,4 +1,6 @@
-#TARGET_TRIPLET=mips-sgi-irix65
+TARGET_INST=/opt/irix-gcc-n32
+
+TARGET_TRIPLET=mips-sgi-irix6n32
 SYSROOT_FILE=files/irix65-dev.tar.xz
 
 BINUTILS_VERSION=2.19.1

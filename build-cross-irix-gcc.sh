@@ -6,15 +6,15 @@ cd $(dirname $0)
 
 TOPDIR=$PWD
 
-MAKE_TASKS=15
-
-TARGET_INST=/opt/cross-irix-gcc-o32
-
 if test -e "$1"; then
     source "$1"
 else
     source ${TOPDIR}/config.inc
 fi
+
+MAKE_TASKS=${MAKE_TASKS:-15}
+
+TARGET_INST=${TARGET_INST:-/opt/irix-gcc}-cross
 
 TARGET_TRIPLET=${TARGET_TRIPLET:-mips-sgi-irix6o32}
 

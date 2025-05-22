@@ -13,6 +13,6 @@ COPY build-irix-gcc.sh /root/
 RUN apt update && apt full-upgrade -y && apt install -y build-essential texinfo autoconf2.69 wget mc libtool autopoint
 RUN /bin/bash /root/build-cross-irix-gcc.sh
 
-ENV PATH="$PATH:/opt/cross-irix-gcc-o32/bin"
+ENV PATH="$PATH:/opt/irix-gcc-o32-cross/bin"
 
 CMD ["/bin/bash"]

@@ -1,3 +1,5 @@
+TARGET_INST=/opt/irix-gcc-o32
+
 BINUTILS_VERSION=2.19.1
 BINUTILS_PATCHES="files/binutils-${BINUTILS_VERSION}-irix.diff"
 BINUTILS_CONF_OPTS="--enable-lto=no --enable-multilib"

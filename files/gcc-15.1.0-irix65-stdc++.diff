@@ -1,0 +1,10 @@
+diff -Nur gcc-15.1.0/libstdc++-v3/include/bits/c++config gcc-15.1.0-irix/libstdc++-v3/include/bits/c++config
+--- gcc-15.1.0/libstdc++-v3/include/bits/c++config	2025-04-25 08:18:05.000000000 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/include/bits/c++config	2025-05-23 09:12:55.691675790 +0000
+@@ -952,4 +952,6 @@
+ 
+ #pragma GCC diagnostic pop
+ 
++#define _SGI_COMPILING_LIBC
++
+ // End of prewritten config; the settings discovered at configure time follow.

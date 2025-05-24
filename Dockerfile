@@ -9,10 +9,15 @@ WORKDIR /root
 COPY files /root/files
 COPY build-cross-irix-gcc.sh /root/
 COPY build-irix-gcc.sh /root/
+COPY config.inc /root/
+COPY config-irix65.inc /root/
+COPY config-n32.inc /root/
 
-RUN apt update && apt full-upgrade -y && apt install -y build-essential texinfo autoconf2.69 wget mc libtool autopoint
+RUN apt update && apt full-upgrade -y && apt install -y build-essential texinfo autoconf2.69 wget mc libtool autopoint xz-utils
 RUN /bin/bash /root/build-cross-irix-gcc.sh
+RUN rm -rf tmp/binutils-2.19.1 tmp/gcc-15.1.0 tmp/*.installed
+RUN /bin/bash /root/build-cross-irix-gcc.sh config-irix65.inc
 
-ENV PATH="$PATH:/opt/irix-gcc-o32-cross/bin"
+ENV PATH="$PATH:/opt/irix-gcc-o32-cross/bin:/opt/irix-gcc-n32-cross/bin"
 
 CMD ["/bin/bash"]

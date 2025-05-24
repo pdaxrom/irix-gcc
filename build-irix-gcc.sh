@@ -6,16 +6,17 @@ cd $(dirname $0)
 
 TOPDIR=$PWD
 
-MAKE_TASKS=15
-
-CROSS_INST=/opt/cross-irix-gcc-o32
-TARGET_INST=/opt/irix-gcc-o32
-
 if test -e "$1"; then
     source "$1"
 else
     source ${TOPDIR}/config.inc
 fi
+
+MAKE_TASKS=${MAKE_TASKS:-15}
+
+TARGET_INST=${TARGET_INST:-/opt/irix-gcc}
+
+CROSS_INST=${TARGET_INST}-cross
 
 TARGET_TRIPLET=${TARGET_TRIPLET:-mips-sgi-irix6o32}
 
@@ -45,6 +46,10 @@ make install || error "Install binutils"
 
 ${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/* || true
 ${TARGET_TRIPLET}-strip ${TARGET_INST}/${TARGET_TRIPLET}/bin/* || true
+
+test -d ${TARGET_INST}/lib && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib/*.so* || true
+test -d ${TARGET_INST}/lib32 && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib32/*.so* || true
+test -d ${TARGET_INST}/lib64 && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib64/*.so* || true
 
 cd ../..
 

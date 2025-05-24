@@ -9,3 +9,5 @@ GCC_VERSION=15.1.0
 GCC_PATCHES="files/gcc-${GCC_VERSION}-irix.diff"
 #GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-maintainer-mode"
 GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror"
+
+GDB_VERSION=7.3.1

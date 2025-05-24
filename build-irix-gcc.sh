@@ -32,47 +32,65 @@ export PATH=${CROSS_INST}/bin:$PATH
 
 cd tmp
 
-cd binutils-${BINUTILS_VERSION}
+if ! test -e binutils.installed ; then
+    pushd binutils-${BINUTILS_VERSION}
+    mkdir -p build
+    cd build
 
-mkdir -p build
+    eval ../configure --prefix=${TARGET_INST} --target=${TARGET_TRIPLET} --host=${TARGET_TRIPLET} --without-nls --disable-werror --enable-shared ${BINUTILS_CONF_OPTS}
 
-cd build
+    make -j $MAKE_TASKS || error "Build binutils"
 
-eval ../configure --prefix=${TARGET_INST} --target=${TARGET_TRIPLET} --host=${TARGET_TRIPLET} --without-nls --disable-werror --enable-shared ${BINUTILS_CONF_OPTS}
+    make install || error "Install binutils"
 
-make -j $MAKE_TASKS || error "Build binutils"
+    ${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/* || true
+    ${TARGET_TRIPLET}-strip ${TARGET_INST}/${TARGET_TRIPLET}/bin/* || true
 
-make install || error "Install binutils"
+    test -d ${TARGET_INST}/lib && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib/*.so* || true
+    test -d ${TARGET_INST}/lib32 && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib32/*.so* || true
+    test -d ${TARGET_INST}/lib64 && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib64/*.so* || true
 
-${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/* || true
-${TARGET_TRIPLET}-strip ${TARGET_INST}/${TARGET_TRIPLET}/bin/* || true
+    popd
+    touch binutils.installed
+fi
 
-test -d ${TARGET_INST}/lib && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib/*.so* || true
-test -d ${TARGET_INST}/lib32 && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib32/*.so* || true
-test -d ${TARGET_INST}/lib64 && ${TARGET_TRIPLET}-strip ${TARGET_INST}/lib64/*.so* || true
-
-cd ../..
-
-cd gcc-${GCC_VERSION}
-
-mkdir -p build
-
-cd build
-
-mkdir gcc
-cat > gcc/config.cache <<EOF
+if ! test -e gcc.installed ; then
+    pushd gcc-${GCC_VERSION}
+    mkdir -p build
+    cd build
+    mkdir gcc
+    cat > gcc/config.cache <<EOF
 ac_cv_c_bigendian=${ac_cv_c_bigendian=yes}
 EOF
 
-eval ../configure --prefix=${TARGET_INST} --host=${TARGET_TRIPLET} --without-nls --with-gnu-as --with-gnu-ld --enable-shared ${GCC_CONF_OPTS} \
- CC_FOR_TARGET=${TARGET_TRIPLET}-gcc \
- CXX_FOR_TARGET=${TARGET_TRIPLET}-g++
+    eval ../configure --prefix=${TARGET_INST} --host=${TARGET_TRIPLET} --without-nls --with-gnu-as --with-gnu-ld --enable-shared ${GCC_CONF_OPTS} \
+        CC_FOR_TARGET=${TARGET_TRIPLET}-gcc \
+        CXX_FOR_TARGET=${TARGET_TRIPLET}-g++
 
-make -j $MAKE_TASKS || error "Build gcc"
+    make -j $MAKE_TASKS || error "Build gcc"
 
-make install-strip || error "Install gcc"
+    make install-strip || error "Install gcc"
 
-cd ../..
+    popd
+    touch gcc.installed
+fi
+
+if ! test -e gdb.installed ; then
+    pushd gdb-${GDB_VERSION}
+    mkdir -p build
+    cd build
+
+    ../configure --prefix=${TARGET_INST} --host=${TARGET_TRIPLET} --disable-werror --disable-multibyte --cache-file=config.cache CC="${TARGET_TRIPLET}-gcc -std=gnu99"
+
+    make MAKEINFO=true -j $MAKE_TASKS
+
+    make MAKEINFO=true install
+
+    ${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/gdb ${TARGET_INST}/bin/gdbtui ${TARGET_INST}/bin/run
+
+    popd
+    touch gdb.installed
+fi
 
 OUT_FILENAME=$(basename ${TARGET_INST})
 

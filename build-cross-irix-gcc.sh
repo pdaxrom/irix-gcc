@@ -112,4 +112,14 @@ if ! test -e cross-gcc.installed ; then
     touch cross-gcc.installed
 fi
 
+if ! test -e cross-gdb.installed ; then
+    test -f gdb-${GDB_VERSION}.tar.gz || wget https://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.gz
+    test -d gdb-${GDB_VERSION} || tar xf gdb-${GDB_VERSION}.tar.gz
+    pushd  gdb-${GDB_VERSION}
+    patch -p1 < ${TOPDIR}/files/gdb-${GDB_VERSION}-irix.diff
+
+    popd
+    touch cross-gdb.installed
+fi
+
 echo "Done"

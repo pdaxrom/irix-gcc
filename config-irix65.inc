@@ -13,3 +13,5 @@ GCC_VERSION=15.1.0
 GCC_PATCHES="files/gcc-${GCC_VERSION}-irix.diff files/gcc-${GCC_VERSION}-irix65-stdc++.diff files/gcc-${GCC_VERSION}-irix-n32.diff"
 #GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-cxx-flags=\"-U__c99 -D_SGI_COMPILING_LIBC\" --enable-maintainer-mode"
 GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-cxx-flags=\"-U__c99 -D_SGI_COMPILING_LIBC\""
+
+GDB_VERSION=7.3.1

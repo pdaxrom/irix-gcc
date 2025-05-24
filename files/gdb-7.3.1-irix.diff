@@ -1,0 +1,111 @@
+diff -Nur gdb-7.3.1/bfd/bfdio.c gdb-7.3.1-irix/bfd/bfdio.c
+--- gdb-7.3.1/bfd/bfdio.c	2010-06-09 13:28:31.000000000 +0000
++++ gdb-7.3.1-irix/bfd/bfdio.c	2025-05-24 15:06:43.772148866 +0000
+@@ -577,7 +577,7 @@
+ {
+   struct bfd_in_memory *bim = (struct bfd_in_memory *) abfd->iostream;
+ 
+-  memset (statbuf, 0, sizeof (statbuf));
++  memset (statbuf, 0, sizeof (struct stat));
+   statbuf->st_size = bim->size;
+ 
+   return 0;
+diff -Nur gdb-7.3.1/gdb/irix5-nat.c gdb-7.3.1-irix/gdb/irix5-nat.c
+--- gdb-7.3.1/gdb/irix5-nat.c	2011-01-09 03:08:57.000000000 +0000
++++ gdb-7.3.1-irix/gdb/irix5-nat.c	2025-05-24 15:14:10.821442886 +0000
+@@ -151,7 +151,7 @@
+ 
+   for (regi = 0; regi < 32; regi++)
+     regcache_raw_supply (regcache, gdbarch_fp0_regnum (gdbarch) + regi,
+-			 (const char *) &fpregsetp->__fp_r.__fp_regs[regi]);
++			 (const char *) &fpregsetp->fp_r.fp_regs[regi]);
+ 
+   /* We can't supply the FSR register directly to the regcache,
+      because there is a size issue: On one hand, fpregsetp->fp_csr
+@@ -159,7 +159,7 @@
+      So we use a buffer of the correct size and copy into it the register
+      value at the proper location.  */
+   memset (fsrbuf, 0, 4);
+-  memcpy (fsrbuf + 4, &fpregsetp->__fp_csr, 4);
++  memcpy (fsrbuf + 4, &fpregsetp->fp_csr, 4);
+ 
+   regcache_raw_supply (regcache,
+ 		       mips_regnum (gdbarch)->fp_control_status, fsrbuf);
+@@ -187,7 +187,7 @@
+ 	{
+ 	  const int fp0_regnum = gdbarch_fp0_regnum (gdbarch);
+ 
+-	  to = (char *) &(fpregsetp->__fp_r.__fp_regs[regi - fp0_regnum]);
++	  to = (char *) &(fpregsetp->fp_r.fp_regs[regi - fp0_regnum]);
+           regcache_raw_collect (regcache, regi, to);
+ 	}
+     }
+@@ -205,7 +205,7 @@
+       regcache_raw_collect (regcache,
+ 			    mips_regnum (gdbarch)->fp_control_status, fsrbuf);
+ 
+-      memcpy (&fpregsetp->__fp_csr, fsrbuf + 4, 4);
++      memcpy (&fpregsetp->fp_csr, fsrbuf + 4, 4);
+     }
+ }
+ 
+diff -Nur gdb-7.3.1/libiberty/pex-unix.c gdb-7.3.1-irix/libiberty/pex-unix.c
+--- gdb-7.3.1/libiberty/pex-unix.c	2011-01-03 21:05:58.000000000 +0000
++++ gdb-7.3.1-irix/libiberty/pex-unix.c	2025-05-24 15:03:16.734889730 +0000
+@@ -305,7 +305,7 @@
+ 				 int, int, int, int,
+ 				 const char **, int *);
+ static int pex_unix_close (struct pex_obj *, int);
+-static int pex_unix_wait (struct pex_obj *, pid_t, int *, struct pex_time *,
++static pid_t pex_unix_wait (struct pex_obj *, pid_t, int *, struct pex_time *,
+ 			  int, const char **, int *);
+ static int pex_unix_pipe (struct pex_obj *, int *, int);
+ static FILE *pex_unix_fdopenr (struct pex_obj *, int, int);
+@@ -723,7 +723,7 @@
+ 
+ /* Wait for a child process to complete.  */
+ 
+-static int
++static pid_t
+ pex_unix_wait (struct pex_obj *obj, pid_t pid, int *status,
+ 	       struct pex_time *time, int done, const char **errmsg,
+ 	       int *err)
+diff -Nur gdb-7.3.1/readline/display.c gdb-7.3.1-irix/readline/display.c
+--- gdb-7.3.1/readline/display.c	2008-03-24 12:59:51.000000000 +0000
++++ gdb-7.3.1-irix/readline/display.c	2025-05-24 15:11:19.786150329 +0000
+@@ -442,7 +442,10 @@
+       inv_lbreaks[0] = vis_lbreaks[0] = 0;
+     }
+ }
+-  
++
++extern void _rl_block_sigint PARAMS((void));
++extern void _rl_release_sigint PARAMS((void));
++
+ /* Basic redisplay algorithm. */
+ void
+ rl_redisplay ()
+diff -Nur gdb-7.3.1/sim/common/sim-arange.c gdb-7.3.1-irix/sim/common/sim-arange.c
+--- gdb-7.3.1/sim/common/sim-arange.c	2011-01-01 15:33:56.000000000 +0000
++++ gdb-7.3.1-irix/sim/common/sim-arange.c	2025-05-24 15:12:11.238946033 +0000
+@@ -285,7 +285,7 @@
+ 
+ #if DEFINE_INLINE_P
+ 
+-SIM_ARANGE_INLINE int
++static int
+ sim_addr_range_hit_p (ADDR_RANGE *ar, address_word addr)
+ {
+   ADDR_RANGE_TREE *t = ar->range_tree;
+diff -Nur gdb-7.3.1/sim/common/sim-arange.h gdb-7.3.1-irix/sim/common/sim-arange.h
+--- gdb-7.3.1/sim/common/sim-arange.h	2011-01-01 15:33:56.000000000 +0000
++++ gdb-7.3.1-irix/sim/common/sim-arange.h	2025-05-24 15:12:01.830434833 +0000
+@@ -63,7 +63,7 @@
+ 
+ /* Return non-zero if ADDR is in range AR, traversing the entire tree.
+    If no range is specified, that is defined to mean "everything".  */
+-extern INLINE int
++static int
+ sim_addr_range_hit_p (ADDR_RANGE * /*ar*/, address_word /*addr*/);
+ #define ADDR_RANGE_HIT_P(ar, addr) \
+   ((ar)->range_tree == NULL || sim_addr_range_hit_p ((ar), (addr)))

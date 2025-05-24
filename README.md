@@ -1,5 +1,11 @@
 Support for Irix with ABI O32 (Irix 5.3 - 6.22) and N32 (Irix 6.2 and Irix 6.5) was removed from gcc, this project brings it back.
 
+### Getting the sources
+
+Use git-lfs to clone the repository:
+
+```git-lfs clone git@github.com:pdaxrom/irix-gcc.git```
+
 ### Docker
 
 For simple build use docker:

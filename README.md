@@ -1,4 +1,11 @@
-Support for Irix with ABI O32 (Irix 5.3 - 6.22) and N32 (Irix 6.2 and Irix 6.5) was removed from gcc, this project brings it back.
+Support for Irix was removed from gcc, this project brings it back.
+
+The following compiler builds are supported:
+
+- Irix 5.3 - ABI O32
+- Irix 6.2 - ABI O32/N32
+- Irix 6.2 - ABI N32/O32
+- Irix 6.5 - ABI N32/O32/N64
 
 ### Getting the sources
 
@@ -12,7 +19,7 @@ For simple build use docker:
 
 ```bash build-docker.sh```
 
-This will create a docker image with cross-compilers and archives with native ones for deployment on SGI machines for Irix 5.3 - 6.33 ABI O32 and Irix 6.5 ABI N32.
+This will create a docker image with cross-compilers and archives with native ones for deployment on SGI machines for Irix 5.3 - 6.2 ABI O32/N32 and Irix 6.5 ABI N32/64/32.
 
 Copy the required archive to the machine and unpack it in the root directory. The path to the o32 compiler is - /opt/irix-gcc-o32/bin, to the n32 - /opt/irix-gcc-n32/bin.
 

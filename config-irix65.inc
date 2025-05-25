@@ -10,7 +10,8 @@ BINUTILS_EXT=bz2
 
 GCC_VERSION=15.1.0
 GCC_PATCHES="files/gcc-${GCC_VERSION}-irix.diff files/gcc-${GCC_VERSION}-irix65-stdc++.diff files/gcc-${GCC_VERSION}-irix-n32.diff files/gcc-${GCC_VERSION}-irix65-abi64.diff"
-#GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-cxx-flags=\"-U__c99 -D_SGI_COMPILING_LIBC\" --enable-maintainer-mode"
-GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-cxx-flags=\"-U__c99 -D_SGI_COMPILING_LIBC\""
+#GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-maintainer-mode"
+GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror"
 
 GDB_VERSION=7.3.1
+GDB_CONF_OPTS="--enable-64-bit-bfd --enable-targets=mips-sgi-irix6n32,mips-sgi-irix6o32,mips-sgi-irix65 --disable-sim"

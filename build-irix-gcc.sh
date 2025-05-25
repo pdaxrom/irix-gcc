@@ -80,13 +80,13 @@ if ! test -e gdb.installed ; then
     mkdir -p build
     cd build
 
-    ../configure --prefix=${TARGET_INST} --host=${TARGET_TRIPLET} --disable-werror --disable-multibyte --cache-file=config.cache CC="${TARGET_TRIPLET}-gcc -std=gnu99"
+    ../configure --prefix=${TARGET_INST} --host=${TARGET_TRIPLET} --disable-werror --disable-multibyte ${GDB_CONF_OPTS} --cache-file=config.cache CC="${TARGET_TRIPLET}-gcc -std=gnu99"
 
     make MAKEINFO=true -j $MAKE_TASKS
 
     make MAKEINFO=true install
 
-    ${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/gdb ${TARGET_INST}/bin/gdbtui ${TARGET_INST}/bin/run
+    ${TARGET_TRIPLET}-strip ${TARGET_INST}/bin/gdb ${TARGET_INST}/bin/gdbtui ${TARGET_INST}/bin/run || true
 
     popd
     touch gdb.installed

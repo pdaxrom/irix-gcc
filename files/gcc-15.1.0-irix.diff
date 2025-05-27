@@ -930,6 +930,20 @@ diff -Nur gcc-15.1.0/gcc/hwint.h gcc-15.1.0-irix/gcc/hwint.h
  /* Inline functions operating on HOST_WIDE_INT.  */
  
  /* Return X with all but the lowest bit masked off.  */
+diff -Nur gcc-15.1.0/gcc/dwarf2cfi.cc gcc-15.1.0-irix/gcc/dwarf2cfi.cc
+--- gcc-15.1.0/gcc/dwarf2cfi.cc	2025-04-25 08:18:01.000000000 +0000
++++ gcc-15.1.0-irix/gcc/dwarf2cfi.cc	2025-05-23 09:09:29.303437983 +0000
+@@ -1539,6 +1539,10 @@
+
+   add_cfi_restore (regno);
+   update_row_reg_save (cur_row, regno, NULL);
++  if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
++    && regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
++    && regno != DWARF_FRAME_RETURN_COLUMN)
++    reg_save (DWARF_FRAME_RETURN_COLUMN, regno, 0);
+}
+
+/* A subroutine of dwarf2out_frame_debug, process a REG_CFA_WINDOW_SAVE.
 diff -Nur gcc-15.1.0/gcc/sreal.cc gcc-15.1.0-irix/gcc/sreal.cc
 --- gcc-15.1.0/gcc/sreal.cc	2025-04-25 08:18:01.000000000 +0000
 +++ gcc-15.1.0-irix/gcc/sreal.cc	2025-05-23 09:09:29.303437983 +0000
@@ -1029,6 +1043,7 @@ diff -Nur gcc-15.1.0/libcody/cody.hh gcc-15.1.0-irix/libcody/cody.hh
  // C++
  #include <memory>
  #include <string>
+ 
 diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crti.asm gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm
 --- gcc-15.1.0/libgcc/config/mips/irix-crti.asm	1970-01-01 00:00:00.000000000 +0000
 +++ gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm	2025-05-23 09:09:29.307438201 +0000
@@ -1395,6 +1410,22 @@ diff -Nur gcc-15.1.0/libgcc/Makefile.in gcc-15.1.0-irix/libgcc/Makefile.in
  endif
  
  # Build extra startfiles in the libgcc directory.
+diff -urnp gcc-15.1.0/libgomp/config/posix/proc.c gcc-15.1.0-irix/libgomp/config/posix/proc.c
+*** gcc-15.1.0/libgomp/config/posix/proc.c    Mon May  25 14:57:52 2025
+--- gcc-15.1.0-irix/libgomp/config/posix/proc.c Mon May  25 14:58:43 2025
+***************
+*** 38,43 ****
+--- 38,48 ----
+  #endif
+ 
+ 
++ #ifdef __sgi
++ #define _SC_NPROCESSORS_ONLN _SC_NPROC_ONLN
++ #endif
++
++
+  /* At startup, determine the default number of threads.  It would seem
+     this should be related to the number of cpus online.  */
 diff -Nur gcc-15.1.0/libgomp/configure.tgt gcc-15.1.0-irix/libgomp/configure.tgt
 --- gcc-15.1.0/libgomp/configure.tgt	2025-04-25 08:18:04.000000000 +0000
 +++ gcc-15.1.0-irix/libgomp/configure.tgt	2025-05-23 09:09:29.308438255 +0000

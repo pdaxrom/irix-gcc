@@ -1,6 +1,6 @@
 diff -Nur gcc-15.1.0/c++tools/server.cc gcc-15.1.0-irix/c++tools/server.cc
 --- gcc-15.1.0/c++tools/server.cc	2025-04-25 08:17:59.000000000 +0000
-+++ gcc-15.1.0-irix/c++tools/server.cc	2025-05-23 09:09:29.289437221 +0000
++++ gcc-15.1.0-irix/c++tools/server.cc	2025-05-27 04:49:27.597679313 +0000
 @@ -36,6 +36,9 @@
  #include <sys/stat.h>
  #include <fcntl.h>
@@ -13,7 +13,7 @@ diff -Nur gcc-15.1.0/c++tools/server.cc gcc-15.1.0-irix/c++tools/server.cc
     we poison later!  */
 diff -Nur gcc-15.1.0/fixincludes/server.c gcc-15.1.0-irix/fixincludes/server.c
 --- gcc-15.1.0/fixincludes/server.c	2025-04-25 08:17:59.000000000 +0000
-+++ gcc-15.1.0-irix/fixincludes/server.c	2025-05-23 09:09:29.289437221 +0000
++++ gcc-15.1.0-irix/fixincludes/server.c	2025-05-27 04:49:27.597679313 +0000
 @@ -155,8 +155,13 @@
   *  to our server, and also that if the server dies, we do not
   *  die from a sigpipe problem.
@@ -30,7 +30,7 @@ diff -Nur gcc-15.1.0/fixincludes/server.c gcc-15.1.0-irix/fixincludes/server.c
    /* FIXME: this is illegal to do in a signal handler.  */
 diff -Nur gcc-15.1.0/gcc/aclocal.m4 gcc-15.1.0-irix/gcc/aclocal.m4
 --- gcc-15.1.0/gcc/aclocal.m4	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/aclocal.m4	2025-05-23 09:09:29.290437276 +0000
++++ gcc-15.1.0-irix/gcc/aclocal.m4	2025-05-27 04:49:27.599679421 +0000
 @@ -1,6 +1,6 @@
 -# generated automatically by aclocal 1.15.1 -*- Autoconf -*-
 +# generated automatically by aclocal 1.15 -*- Autoconf -*-
@@ -60,7 +60,7 @@ diff -Nur gcc-15.1.0/gcc/aclocal.m4 gcc-15.1.0-irix/gcc/aclocal.m4
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/gcc/config/mips/iris5.h gcc-15.1.0-irix/gcc/config/mips/iris5.h
 --- gcc-15.1.0/gcc/config/mips/iris5.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/iris5.h	2025-05-23 09:09:29.291437329 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris5.h	2025-05-27 04:49:27.599679421 +0000
 @@ -0,0 +1,56 @@
 +/* Definitions of target machine for GNU compiler.  IRIX version 5.
 +   Copyright (C) 1993, 1995, 1996, 1998, 2000,
@@ -120,7 +120,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/iris5.h gcc-15.1.0-irix/gcc/config/mips/iri
 +/*#define MACHINE_TYPE "SGI running IRIX 5.x" */
 diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix/gcc/config/mips/iris6.h
 --- gcc-15.1.0/gcc/config/mips/iris6.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/iris6.h	2025-05-23 09:09:29.291437329 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris6.h	2025-05-27 04:49:27.599679421 +0000
 @@ -0,0 +1,145 @@
 +/* Definitions of target machine for GNU compiler.  IRIX version 6.
 +   Copyright (C) 1994, 1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004,
@@ -269,7 +269,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix/gcc/config/mips/iri
 +#define SUBTARGET_CPP_SPEC "%{pthread:-D_REENTRANT}"
 diff -Nur gcc-15.1.0/gcc/config/mips/iris.h gcc-15.1.0-irix/gcc/config/mips/iris.h
 --- gcc-15.1.0/gcc/config/mips/iris.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/iris.h	2025-05-23 09:09:54.622816535 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris.h	2025-05-27 04:49:27.599679421 +0000
 @@ -0,0 +1,232 @@
 +/* Definitions of target machine for GNU compiler.  Generic IRIX version.
 +   Copyright (C) 1993, 1995, 1996, 1998, 2000,
@@ -505,7 +505,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/iris.h gcc-15.1.0-irix/gcc/config/mips/iris
 +#endif
 diff -Nur gcc-15.1.0/gcc/config/mips/mips.cc gcc-15.1.0-irix/gcc/config/mips/mips.cc
 --- gcc-15.1.0/gcc/config/mips/mips.cc	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/mips.cc	2025-05-23 09:09:29.293437439 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/mips.cc	2025-05-27 04:49:27.602679585 +0000
 @@ -916,7 +916,7 @@
  		     6            /* memory_latency */
    },
@@ -612,7 +612,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/mips.cc gcc-15.1.0-irix/gcc/config/mips/mip
      {
 diff -Nur gcc-15.1.0/gcc/config/mips/mips.h gcc-15.1.0-irix/gcc/config/mips/mips.h
 --- gcc-15.1.0/gcc/config/mips/mips.h	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/mips.h	2025-05-23 09:09:29.294437493 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/mips.h	2025-05-27 04:49:27.603679638 +0000
 @@ -225,7 +225,9 @@
  
  /* True if .gpword or .gpdword should be used for switch tables.  */
@@ -663,7 +663,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/mips.h gcc-15.1.0-irix/gcc/config/mips/mips
  	builtin_define ("__mips_fpr=64");				\
 diff -Nur gcc-15.1.0/gcc/config/mips/t-iris gcc-15.1.0-irix/gcc/config/mips/t-iris
 --- gcc-15.1.0/gcc/config/mips/t-iris	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/t-iris	2025-05-23 09:09:29.295437547 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/t-iris	2025-05-27 04:49:27.603679638 +0000
 @@ -0,0 +1,13 @@
 +$(T)irix-crti.o: $(srcdir)/config/mips/irix-crti.asm $(GCC_PASSES)
 +	$(GCC_FOR_TARGET) $(GCC_CFLAGS) $(MULTILIB_CFLAGS) $(INCLUDES) \
@@ -680,7 +680,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/t-iris gcc-15.1.0-irix/gcc/config/mips/t-ir
 +#define ENDFILE_SPEC "crtend.s irix-crtn.asm"
 diff -Nur gcc-15.1.0/gcc/config/mips/t-iris6 gcc-15.1.0-irix/gcc/config/mips/t-iris6
 --- gcc-15.1.0/gcc/config/mips/t-iris6	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config/mips/t-iris6	2025-05-23 09:09:29.295437547 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/t-iris6	2025-05-27 04:49:27.603679638 +0000
 @@ -0,0 +1,38 @@
 +# Copyright (C) 1995, 1996, 1997, 1998, 2000, 2001, 2002, 2003, 2004, 2005,
 +# 2006 Free Software Foundation, Inc.
@@ -730,7 +730,7 @@ diff -Nur gcc-15.1.0/gcc/config/mips/t-irix6 gcc-15.1.0-irix/gcc/config/mips/t-i
 -MULTILIB_OSDIRNAMES=../lib32 ../lib64
 diff -Nur gcc-15.1.0/gcc/config.gcc gcc-15.1.0-irix/gcc/config.gcc
 --- gcc-15.1.0/gcc/config.gcc	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/config.gcc	2025-05-23 09:09:29.296437602 +0000
++++ gcc-15.1.0-irix/gcc/config.gcc	2025-05-27 04:49:27.605679747 +0000
 @@ -2612,6 +2612,50 @@
  	gcc_cv_initfini_array=yes
  	;;
@@ -784,7 +784,7 @@ diff -Nur gcc-15.1.0/gcc/config.gcc gcc-15.1.0-irix/gcc/config.gcc
  	tm_file="elfos.h ${tm_file} mips/elf.h ${nbsd_tm_file} mips/netbsd.h"
 diff -Nur gcc-15.1.0/gcc/configure gcc-15.1.0-irix/gcc/configure
 --- gcc-15.1.0/gcc/configure	2025-04-25 08:21:27.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/configure	2025-05-23 09:09:29.299437765 +0000
++++ gcc-15.1.0-irix/gcc/configure	2025-05-27 04:49:27.607679855 +0000
 @@ -8044,7 +8044,16 @@
        ;;
  
@@ -851,7 +851,7 @@ diff -Nur gcc-15.1.0/gcc/configure gcc-15.1.0-irix/gcc/configure
  $as_echo "#define HAVE_AS_TLS 1" >>confdefs.h
 diff -Nur gcc-15.1.0/gcc/configure.ac gcc-15.1.0-irix/gcc/configure.ac
 --- gcc-15.1.0/gcc/configure.ac	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/configure.ac	2025-05-23 09:09:29.301437874 +0000
++++ gcc-15.1.0-irix/gcc/configure.ac	2025-05-27 04:49:27.610680017 +0000
 @@ -974,7 +974,15 @@
        ;;
  
@@ -899,7 +899,7 @@ diff -Nur gcc-15.1.0/gcc/configure.ac gcc-15.1.0-irix/gcc/configure.ac
  	    [Define if your assembler and linker support thread-local storage.])
 diff -Nur gcc-15.1.0/gcc/cp/mapper-client.cc gcc-15.1.0-irix/gcc/cp/mapper-client.cc
 --- gcc-15.1.0/gcc/cp/mapper-client.cc	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/cp/mapper-client.cc	2025-05-23 09:09:29.302437929 +0000
++++ gcc-15.1.0-irix/gcc/cp/mapper-client.cc	2025-05-27 04:49:27.610680017 +0000
 @@ -22,6 +22,7 @@
  #if defined (__unix__)
  // Solaris11's socket header used bcopy, which we poison.  cody.hh
@@ -908,9 +908,34 @@ diff -Nur gcc-15.1.0/gcc/cp/mapper-client.cc gcc-15.1.0-irix/gcc/cp/mapper-clien
  #include <sys/socket.h>
  #endif
  #define INCLUDE_STRING
+diff -Nur gcc-15.1.0/gcc/dwarf2cfi.cc gcc-15.1.0-irix/gcc/dwarf2cfi.cc
+--- gcc-15.1.0/gcc/dwarf2cfi.cc	2025-04-25 08:18:00.000000000 +0000
++++ gcc-15.1.0-irix/gcc/dwarf2cfi.cc	2025-05-27 04:58:30.530108377 +0000
+@@ -1521,6 +1521,10 @@
+       if (emit_cfi)
+ 	add_cfi_restore (regno);
+       update_row_reg_save (cur_row, regno, NULL);
++ /*     if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
++	&& regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
++	&& regno != DWARF_FRAME_RETURN_COLUMN)
++	  reg_save (DWARF_FRAME_RETURN_COLUMN, regno, NULL); */
+     }
+   else
+     {
+@@ -1537,6 +1541,10 @@
+ 	  if (emit_cfi)
+ 	    add_cfi_restore (regno);
+ 	  update_row_reg_save (cur_row, regno, NULL);
++ /*         if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
++	    && regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
++	    && regno != DWARF_FRAME_RETURN_COLUMN)
++	      reg_save (DWARF_FRAME_RETURN_COLUMN, regno, NULL); */
+ 	}
+     }
+ }
 diff -Nur gcc-15.1.0/gcc/hwint.h gcc-15.1.0-irix/gcc/hwint.h
 --- gcc-15.1.0/gcc/hwint.h	2025-04-25 08:18:00.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/hwint.h	2025-05-23 09:09:29.303437983 +0000
++++ gcc-15.1.0-irix/gcc/hwint.h	2025-05-27 04:49:27.612680126 +0000
 @@ -155,6 +155,18 @@
  #  define HOST_BITS_PER_WIDEST_FAST_INT HOST_BITS_PER_LONG
  #endif
@@ -930,23 +955,9 @@ diff -Nur gcc-15.1.0/gcc/hwint.h gcc-15.1.0-irix/gcc/hwint.h
  /* Inline functions operating on HOST_WIDE_INT.  */
  
  /* Return X with all but the lowest bit masked off.  */
-diff -Nur gcc-15.1.0/gcc/dwarf2cfi.cc gcc-15.1.0-irix/gcc/dwarf2cfi.cc
---- gcc-15.1.0/gcc/dwarf2cfi.cc	2025-04-25 08:18:01.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/dwarf2cfi.cc	2025-05-23 09:09:29.303437983 +0000
-@@ -1539,6 +1539,10 @@
-
-   add_cfi_restore (regno);
-   update_row_reg_save (cur_row, regno, NULL);
-+  if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
-+    && regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
-+    && regno != DWARF_FRAME_RETURN_COLUMN)
-+    reg_save (DWARF_FRAME_RETURN_COLUMN, regno, 0);
-}
-
-/* A subroutine of dwarf2out_frame_debug, process a REG_CFA_WINDOW_SAVE.
 diff -Nur gcc-15.1.0/gcc/sreal.cc gcc-15.1.0-irix/gcc/sreal.cc
 --- gcc-15.1.0/gcc/sreal.cc	2025-04-25 08:18:01.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/sreal.cc	2025-05-23 09:09:29.303437983 +0000
++++ gcc-15.1.0-irix/gcc/sreal.cc	2025-05-27 04:49:27.612680126 +0000
 @@ -59,6 +59,10 @@
  #include "cgraph.h"
  #include "data-streamer.h"
@@ -960,7 +971,7 @@ diff -Nur gcc-15.1.0/gcc/sreal.cc gcc-15.1.0-irix/gcc/sreal.cc
  void
 diff -Nur gcc-15.1.0/gcc/varasm.cc gcc-15.1.0-irix/gcc/varasm.cc
 --- gcc-15.1.0/gcc/varasm.cc	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/gcc/varasm.cc	2025-05-23 09:09:29.304438037 +0000
++++ gcc-15.1.0-irix/gcc/varasm.cc	2025-05-27 04:49:27.620680560 +0000
 @@ -3144,7 +3144,7 @@
        gcc_assert (!i);
      }
@@ -981,7 +992,7 @@ diff -Nur gcc-15.1.0/gcc/varasm.cc gcc-15.1.0-irix/gcc/varasm.cc
  #ifndef TLS_SECTION_ASM_FLAG
 diff -Nur gcc-15.1.0/libbacktrace/dwarf.c gcc-15.1.0-irix/libbacktrace/dwarf.c
 --- gcc-15.1.0/libbacktrace/dwarf.c	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libbacktrace/dwarf.c	2025-05-23 09:09:29.304438037 +0000
++++ gcc-15.1.0-irix/libbacktrace/dwarf.c	2025-05-27 04:49:27.622680668 +0000
 @@ -414,7 +414,7 @@
  {
    char b[200];
@@ -993,7 +1004,7 @@ diff -Nur gcc-15.1.0/libbacktrace/dwarf.c gcc-15.1.0-irix/libbacktrace/dwarf.c
  }
 diff -Nur gcc-15.1.0/libbacktrace/fileline.c gcc-15.1.0-irix/libbacktrace/fileline.c
 --- gcc-15.1.0/libbacktrace/fileline.c	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libbacktrace/fileline.c	2025-05-23 09:09:29.305438092 +0000
++++ gcc-15.1.0-irix/libbacktrace/fileline.c	2025-05-27 04:49:27.622680668 +0000
 @@ -300,7 +300,7 @@
  	  filename = "/proc/curproc/file";
  	  break;
@@ -1005,7 +1016,7 @@ diff -Nur gcc-15.1.0/libbacktrace/fileline.c gcc-15.1.0-irix/libbacktrace/fileli
  	  break;
 diff -Nur gcc-15.1.0/libcody/buffer.cc gcc-15.1.0-irix/libcody/buffer.cc
 --- gcc-15.1.0/libcody/buffer.cc	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libcody/buffer.cc	2025-05-23 09:09:29.306438147 +0000
++++ gcc-15.1.0-irix/libcody/buffer.cc	2025-05-27 04:49:27.622680668 +0000
 @@ -150,7 +150,11 @@
    // gcc 4.8, which is a C++11 compiler lacking std::to_string.  so
    // have something horrible.
@@ -1020,7 +1031,7 @@ diff -Nur gcc-15.1.0/libcody/buffer.cc gcc-15.1.0-irix/libcody/buffer.cc
    AppendWord (v);
 diff -Nur gcc-15.1.0/libcody/cody.hh gcc-15.1.0-irix/libcody/cody.hh
 --- gcc-15.1.0/libcody/cody.hh	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libcody/cody.hh	2025-05-23 09:09:29.306438147 +0000
++++ gcc-15.1.0-irix/libcody/cody.hh	2025-05-27 04:49:27.622680668 +0000
 @@ -5,6 +5,10 @@
  #ifndef CODY_HH
  #define CODY_HH 1
@@ -1043,10 +1054,9 @@ diff -Nur gcc-15.1.0/libcody/cody.hh gcc-15.1.0-irix/libcody/cody.hh
  // C++
  #include <memory>
  #include <string>
- 
 diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crti.asm gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm
 --- gcc-15.1.0/libgcc/config/mips/irix-crti.asm	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm	2025-05-23 09:09:29.307438201 +0000
++++ gcc-15.1.0-irix/libgcc/config/mips/irix-crti.asm	2025-05-27 04:49:27.623680723 +0000
 @@ -0,0 +1,81 @@
 +/* Copyright (C) 2004, 2008 Free Software Foundation, Inc.
 +
@@ -1131,7 +1141,7 @@ diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crti.asm gcc-15.1.0-irix/libgcc/con
 +
 diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crtn.asm gcc-15.1.0-irix/libgcc/config/mips/irix-crtn.asm
 --- gcc-15.1.0/libgcc/config/mips/irix-crtn.asm	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libgcc/config/mips/irix-crtn.asm	2025-05-23 09:09:29.307438201 +0000
++++ gcc-15.1.0-irix/libgcc/config/mips/irix-crtn.asm	2025-05-27 04:49:27.623680723 +0000
 @@ -0,0 +1,50 @@
 +/* Copyright (C) 2004 Free Software Foundation, Inc.
 +
@@ -1185,7 +1195,7 @@ diff -Nur gcc-15.1.0/libgcc/config/mips/irix-crtn.asm gcc-15.1.0-irix/libgcc/con
 +#endif
 diff -Nur gcc-15.1.0/libgcc/config.host gcc-15.1.0-irix/libgcc/config.host
 --- gcc-15.1.0/libgcc/config.host	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libgcc/config.host	2025-05-23 09:09:29.307438201 +0000
++++ gcc-15.1.0-irix/libgcc/config.host	2025-05-27 04:49:27.623680723 +0000
 @@ -1061,6 +1061,9 @@
  	tmake_file="${tmake_file} microblaze/t-microblaze t-fdpbit"
  	extra_parts="$extra_parts crtbeginS.o crtendS.o crtbeginT.o crti.o crtn.o"
@@ -1198,7 +1208,7 @@ diff -Nur gcc-15.1.0/libgcc/config.host gcc-15.1.0-irix/libgcc/config.host
  mips*-*-linux*)				# Linux MIPS, either endian.
 diff -Nur gcc-15.1.0/libgcc/gthr-posix.h gcc-15.1.0-irix/libgcc/gthr-posix.h
 --- gcc-15.1.0/libgcc/gthr-posix.h	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libgcc/gthr-posix.h	2025-05-23 09:09:29.308438255 +0000
++++ gcc-15.1.0-irix/libgcc/gthr-posix.h	2025-05-27 04:49:27.624680777 +0000
 @@ -64,7 +64,7 @@
  typedef pthread_once_t __gthread_once_t;
  typedef pthread_mutex_t __gthread_mutex_t;
@@ -1365,7 +1375,7 @@ diff -Nur gcc-15.1.0/libgcc/gthr-posix.h gcc-15.1.0-irix/libgcc/gthr-posix.h
  #endif /* _LIBOBJC */
 diff -Nur gcc-15.1.0/libgcc/libgcov.h gcc-15.1.0-irix/libgcc/libgcov.h
 --- gcc-15.1.0/libgcc/libgcov.h	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libgcc/libgcov.h	2025-05-23 09:09:29.308438255 +0000
++++ gcc-15.1.0-irix/libgcc/libgcov.h	2025-05-27 04:49:27.624680777 +0000
 @@ -46,7 +46,10 @@
  #include "gcov.h"
  
@@ -1396,7 +1406,7 @@ diff -Nur gcc-15.1.0/libgcc/libgcov.h gcc-15.1.0-irix/libgcc/libgcov.h
  #endif
 diff -Nur gcc-15.1.0/libgcc/Makefile.in gcc-15.1.0-irix/libgcc/Makefile.in
 --- gcc-15.1.0/libgcc/Makefile.in	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libgcc/Makefile.in	2025-05-23 09:09:29.307438201 +0000
++++ gcc-15.1.0-irix/libgcc/Makefile.in	2025-05-27 04:49:27.624680777 +0000
 @@ -1097,6 +1097,12 @@
  
  crtn$(objext): $(srcdir)/config/$(cpu_type)/crtn.S
@@ -1410,40 +1420,37 @@ diff -Nur gcc-15.1.0/libgcc/Makefile.in gcc-15.1.0-irix/libgcc/Makefile.in
  endif
  
  # Build extra startfiles in the libgcc directory.
-diff -urnp gcc-15.1.0/libgomp/config/posix/proc.c gcc-15.1.0-irix/libgomp/config/posix/proc.c
-*** gcc-15.1.0/libgomp/config/posix/proc.c    Mon May  25 14:57:52 2025
---- gcc-15.1.0-irix/libgomp/config/posix/proc.c Mon May  25 14:58:43 2025
-***************
-*** 38,43 ****
---- 38,48 ----
-  #endif
+diff -Nur gcc-15.1.0/libgomp/config/posix/proc.c gcc-15.1.0-irix/libgomp/config/posix/proc.c
+--- gcc-15.1.0/libgomp/config/posix/proc.c	2025-04-25 08:18:04.000000000 +0000
++++ gcc-15.1.0-irix/libgomp/config/posix/proc.c	2025-05-27 04:54:52.441287365 +0000
+@@ -38,6 +38,9 @@
+ # endif
+ #endif
  
++#ifdef __sgi
++#define _SC_NPROCESSORS_ONLN _SC_NPROC_ONLN
++#endif
  
-+ #ifdef __sgi
-+ #define _SC_NPROCESSORS_ONLN _SC_NPROC_ONLN
-+ #endif
-+
-+
-  /* At startup, determine the default number of threads.  It would seem
-     this should be related to the number of cpus online.  */
+ /* At startup, determine the default number of threads.  It would seem
+    this should be related to the number of cpus online.  */
 diff -Nur gcc-15.1.0/libgomp/configure.tgt gcc-15.1.0-irix/libgomp/configure.tgt
 --- gcc-15.1.0/libgomp/configure.tgt	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libgomp/configure.tgt	2025-05-23 09:09:29.308438255 +0000
-@@ -186,6 +186,11 @@
- 	XCFLAGS="$XCFLAGS -Wno-error=array-bounds"
++++ gcc-15.1.0-irix/libgomp/configure.tgt	2025-05-27 04:56:27.116419050 +0000
+@@ -153,6 +153,11 @@
+ 	config_path="bsd darwin posix"
  	;;
  
-+  mips-sgi-irix6*)
++  *-*-irix6*)
 +	# Need to link with -lpthread so libgomp.so is self-contained.
 +	XLDFLAGS="${XLDFLAGS} -lpthread"
 +	;;
 +
-   *)
- 	;;
- 
+   *-*-freebsd*)
+ 	# Need to link with -lpthread so libgomp.so is self-contained.
+ 	XLDFLAGS="${XLDFLAGS} -lpthread"
 diff -Nur gcc-15.1.0/libiberty/rust-demangle.c gcc-15.1.0-irix/libiberty/rust-demangle.c
 --- gcc-15.1.0/libiberty/rust-demangle.c	2025-04-25 08:18:04.000000000 +0000
-+++ gcc-15.1.0-irix/libiberty/rust-demangle.c	2025-05-23 09:09:29.309438310 +0000
++++ gcc-15.1.0-irix/libiberty/rust-demangle.c	2025-05-27 04:49:27.625680831 +0000
 @@ -285,7 +285,7 @@
  print_uint64 (struct rust_demangler *rdm, uint64_t x)
  {
@@ -1464,7 +1471,7 @@ diff -Nur gcc-15.1.0/libiberty/rust-demangle.c gcc-15.1.0-irix/libiberty/rust-de
  
 diff -Nur gcc-15.1.0/libstdc++-v3/aclocal.m4 gcc-15.1.0-irix/libstdc++-v3/aclocal.m4
 --- gcc-15.1.0/libstdc++-v3/aclocal.m4	2025-04-25 08:21:27.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/aclocal.m4	2025-05-23 09:09:29.310438364 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/aclocal.m4	2025-05-27 04:49:27.625680831 +0000
 @@ -1,6 +1,6 @@
 -# generated automatically by aclocal 1.15.1 -*- Autoconf -*-
 +# generated automatically by aclocal 1.15 -*- Autoconf -*-
@@ -1628,7 +1635,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/aclocal.m4 gcc-15.1.0-irix/libstdc++-v3/acloca
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/config/locale/generic/time_members.cc gcc-15.1.0-irix/libstdc++-v3/config/locale/generic/time_members.cc
 --- gcc-15.1.0/libstdc++-v3/config/locale/generic/time_members.cc	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/locale/generic/time_members.cc	2025-05-23 09:09:29.337439834 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/locale/generic/time_members.cc	2025-05-27 04:49:27.627680939 +0000
 @@ -133,7 +133,7 @@
        char* __sav = new char[__llen];
        memcpy(__sav, __old, __llen);
@@ -1640,7 +1647,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/locale/generic/time_members.cc gcc-15.1
        // Make sure __s is null terminated.
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/atomicity.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomicity.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/atomicity.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomicity.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomicity.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,38 @@
 +// Low-level functions for atomic operations: IRIX version  -*- C++ -*-
 +
@@ -1682,7 +1689,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/atomicity.h gcc-15.1.0-irix/lib
 +_GLIBCXX_END_NAMESPACE
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/atomic_word.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomic_word.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/atomic_word.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomic_word.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/atomic_word.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,30 @@
 +// Low-level type for atomic operations -*- C++ -*-
 +
@@ -1716,7 +1723,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/atomic_word.h gcc-15.1.0-irix/l
 +#endif 
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,61 @@
 +// Locale support -*- C++ -*-
 +
@@ -1781,7 +1788,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_base.h gcc-15.1.0
 +} // namespace
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,99 @@
 +// Locale support -*- C++ -*-
 +
@@ -1884,7 +1891,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_configure_char.cc
 +} // namespace
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,74 @@
 +// Locale support -*- C++ -*-
 +
@@ -1962,7 +1969,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_inline.h gcc-15.1
 +} // namespace
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,93 @@
 +// Locale support -*- C++ -*-
 +
@@ -2059,7 +2066,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/ctype_noninline.h gcc-1
 +
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/os_defines.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/os_defines.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/os_defines.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/os_defines.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix5.2/os_defines.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,46 @@
 +// Specific definitions for IRIX  -*- C++ -*-
 +
@@ -2109,7 +2116,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix5.2/os_defines.h gcc-15.1.0
 +
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,55 @@
 +// Locale support -*- C++ -*-
 +
@@ -2168,7 +2175,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_base.h gcc-15.1.0
 +_GLIBCXX_END_NAMESPACE
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,71 @@
 +// Locale support -*- C++ -*-
 +
@@ -2243,7 +2250,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_inline.h gcc-15.1
 +_GLIBCXX_END_NAMESPACE
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,94 @@
 +// Locale support -*- C++ -*-
 +
@@ -2341,7 +2348,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/ctype_noninline.h gcc-1
 +
 diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/os_defines.h gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/os_defines.h
 --- gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/os_defines.h	1970-01-01 00:00:00.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/os_defines.h	2025-05-23 09:09:29.311438418 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/config/os/irix/irix6.5/os_defines.h	2025-05-27 04:49:27.628680994 +0000
 @@ -0,0 +1,49 @@
 +// Specific definitions for IRIX  -*- C++ -*-
 +
@@ -2394,7 +2401,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/config/os/irix/irix6.5/os_defines.h gcc-15.1.0
 +
 diff -Nur gcc-15.1.0/libstdc++-v3/configure gcc-15.1.0-irix/libstdc++-v3/configure
 --- gcc-15.1.0/libstdc++-v3/configure	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/configure	2025-05-23 09:09:29.315438636 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/configure	2025-05-27 04:49:27.647682024 +0000
 @@ -50609,6 +50609,62 @@
  
  
@@ -2460,7 +2467,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/configure gcc-15.1.0-irix/libstdc++-v3/configu
     ;;
 diff -Nur gcc-15.1.0/libstdc++-v3/configure.host gcc-15.1.0-irix/libstdc++-v3/configure.host
 --- gcc-15.1.0/libstdc++-v3/configure.host	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/configure.host	2025-05-23 09:09:29.316438691 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/configure.host	2025-05-27 04:49:27.647682024 +0000
 @@ -280,6 +280,17 @@
    hpux*)
      os_include_dir="os/hpux"
@@ -2481,7 +2488,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/configure.host gcc-15.1.0-irix/libstdc++-v3/co
        *-w64-*)
 diff -Nur gcc-15.1.0/libstdc++-v3/crossconfig.m4 gcc-15.1.0-irix/libstdc++-v3/crossconfig.m4
 --- gcc-15.1.0/libstdc++-v3/crossconfig.m4	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/crossconfig.m4	2025-05-23 09:09:29.318438800 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/crossconfig.m4	2025-05-27 04:49:27.648682078 +0000
 @@ -299,6 +299,35 @@
  dnl # long_double_math_on_this_cpu in configure.ac, right after
  dnl # the expansion of the present macro.
@@ -2520,7 +2527,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/crossconfig.m4 gcc-15.1.0-irix/libstdc++-v3/cr
     ;;
 diff -Nur gcc-15.1.0/libstdc++-v3/doc/Makefile.in gcc-15.1.0-irix/libstdc++-v3/doc/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/doc/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/doc/Makefile.in	2025-05-23 09:09:29.319438855 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/doc/Makefile.in	2025-05-27 04:49:27.651682241 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2533,7 +2540,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/doc/Makefile.in gcc-15.1.0-irix/libstdc++-v3/d
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/include/c_compatibility/complex.h gcc-15.1.0-irix/libstdc++-v3/include/c_compatibility/complex.h
 --- gcc-15.1.0/libstdc++-v3/include/c_compatibility/complex.h	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/include/c_compatibility/complex.h	2025-05-23 09:09:29.329439399 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/include/c_compatibility/complex.h	2025-05-27 04:49:27.652682294 +0000
 @@ -40,11 +40,13 @@
  #if __cplusplus >= 201103L && defined(__STRICT_ANSI__)
  // For strict modes do not include the C library's <complex.h>, see PR 82417.
@@ -2550,7 +2557,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/include/c_compatibility/complex.h gcc-15.1.0-i
  #endif
 diff -Nur gcc-15.1.0/libstdc++-v3/include/c_compatibility/fenv.h gcc-15.1.0-irix/libstdc++-v3/include/c_compatibility/fenv.h
 --- gcc-15.1.0/libstdc++-v3/include/c_compatibility/fenv.h	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/include/c_compatibility/fenv.h	2025-05-23 09:09:29.330439453 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/include/c_compatibility/fenv.h	2025-05-27 04:49:27.652682294 +0000
 @@ -38,8 +38,10 @@
  
  #include <bits/c++config.h>
@@ -2564,7 +2571,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/include/c_compatibility/fenv.h gcc-15.1.0-irix
  
 diff -Nur gcc-15.1.0/libstdc++-v3/include/Makefile.in gcc-15.1.0-irix/libstdc++-v3/include/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/include/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/include/Makefile.in	2025-05-23 09:09:29.329439399 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/include/Makefile.in	2025-05-27 04:49:27.653682349 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2577,7 +2584,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/include/Makefile.in gcc-15.1.0-irix/libstdc++-
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/libsupc++/Makefile.in gcc-15.1.0-irix/libstdc++-v3/libsupc++/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/libsupc++/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/libsupc++/Makefile.in	2025-05-23 09:09:29.330439453 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/libsupc++/Makefile.in	2025-05-27 04:49:27.653682349 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2590,7 +2597,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/libsupc++/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/Makefile.in gcc-15.1.0-irix/libstdc++-v3/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/Makefile.in	2025-04-25 08:21:27.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/Makefile.in	2025-05-23 09:09:29.309438310 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/Makefile.in	2025-05-27 04:49:27.654682403 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2603,7 +2610,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/Makefile.in gcc-15.1.0-irix/libstdc++-v3/Makef
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/po/Makefile.in gcc-15.1.0-irix/libstdc++-v3/po/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/po/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/po/Makefile.in	2025-05-23 09:09:29.330439453 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/po/Makefile.in	2025-05-27 04:49:27.654682403 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2616,7 +2623,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/po/Makefile.in gcc-15.1.0-irix/libstdc++-v3/po
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/python/Makefile.in gcc-15.1.0-irix/libstdc++-v3/python/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/python/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/python/Makefile.in	2025-05-23 09:09:29.331439508 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/python/Makefile.in	2025-05-27 04:49:27.655682458 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2629,7 +2636,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/python/Makefile.in gcc-15.1.0-irix/libstdc++-v
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++11/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++11/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/c++11/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++11/Makefile.in	2025-05-23 09:09:29.332439562 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++11/Makefile.in	2025-05-27 04:49:27.655682458 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2642,7 +2649,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++11/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++17/floating_to_chars.cc gcc-15.1.0-irix/libstdc++-v3/src/c++17/floating_to_chars.cc
 --- gcc-15.1.0/libstdc++-v3/src/c++17/floating_to_chars.cc	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++17/floating_to_chars.cc	2025-05-23 09:09:29.333439616 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++17/floating_to_chars.cc	2025-05-27 04:49:27.656682511 +0000
 @@ -709,6 +709,8 @@
    {
      __glibcxx_assert(precision >= 0);
@@ -2662,7 +2669,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++17/floating_to_chars.cc gcc-15.1.0-irix
  template<>
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++17/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++17/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/c++17/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++17/Makefile.in	2025-05-23 09:09:29.332439562 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++17/Makefile.in	2025-05-27 04:49:27.656682511 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2675,7 +2682,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++17/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++20/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++20/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/c++20/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++20/Makefile.in	2025-05-23 09:09:29.334439671 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++20/Makefile.in	2025-05-27 04:49:27.659682674 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2688,7 +2695,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++20/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++23/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++23/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/c++23/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++23/Makefile.in	2025-05-23 09:09:29.334439671 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++23/Makefile.in	2025-05-27 04:49:27.659682674 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2701,7 +2708,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++23/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++26/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++26/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/c++26/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++26/Makefile.in	2025-05-23 09:09:29.334439671 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++26/Makefile.in	2025-05-27 04:49:27.659682674 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2714,7 +2721,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++26/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/c++98/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/c++98/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/c++98/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/c++98/Makefile.in	2025-05-23 09:09:29.335439726 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/c++98/Makefile.in	2025-05-27 04:49:27.659682674 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2727,7 +2734,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/c++98/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/experimental/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/experimental/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/experimental/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/experimental/Makefile.in	2025-05-23 09:09:29.335439726 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/experimental/Makefile.in	2025-05-27 04:49:27.662682837 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2740,7 +2747,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/experimental/Makefile.in gcc-15.1.0-irix/l
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/filesystem/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/filesystem/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/filesystem/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/filesystem/Makefile.in	2025-05-23 09:09:29.335439726 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/filesystem/Makefile.in	2025-05-27 04:49:27.664682945 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2753,7 +2760,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/filesystem/Makefile.in gcc-15.1.0-irix/lib
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/libbacktrace/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/libbacktrace/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/libbacktrace/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/libbacktrace/Makefile.in	2025-05-23 09:09:29.336439780 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/libbacktrace/Makefile.in	2025-05-27 04:49:27.664682945 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2766,7 +2773,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/libbacktrace/Makefile.in gcc-15.1.0-irix/l
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/src/Makefile.in gcc-15.1.0-irix/libstdc++-v3/src/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/src/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/src/Makefile.in	2025-05-23 09:09:29.331439508 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/src/Makefile.in	2025-05-27 04:49:27.664682945 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2779,7 +2786,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/src/Makefile.in gcc-15.1.0-irix/libstdc++-v3/s
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/libstdc++-v3/testsuite/Makefile.in gcc-15.1.0-irix/libstdc++-v3/testsuite/Makefile.in
 --- gcc-15.1.0/libstdc++-v3/testsuite/Makefile.in	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/libstdc++-v3/testsuite/Makefile.in	2025-05-23 09:09:29.336439780 +0000
++++ gcc-15.1.0-irix/libstdc++-v3/testsuite/Makefile.in	2025-05-27 04:49:27.674683487 +0000
 @@ -1,7 +1,7 @@
 -# Makefile.in generated by automake 1.15.1 from Makefile.am.
 +# Makefile.in generated by automake 1.15 from Makefile.am.
@@ -2792,7 +2799,7 @@ diff -Nur gcc-15.1.0/libstdc++-v3/testsuite/Makefile.in gcc-15.1.0-irix/libstdc+
  # gives unlimited permission to copy and/or distribute it,
 diff -Nur gcc-15.1.0/zlib/zconf.h gcc-15.1.0-irix/zlib/zconf.h
 --- gcc-15.1.0/zlib/zconf.h	2025-04-25 08:18:05.000000000 +0000
-+++ gcc-15.1.0-irix/zlib/zconf.h	2025-05-23 09:09:29.337439834 +0000
++++ gcc-15.1.0-irix/zlib/zconf.h	2025-05-27 04:49:27.674683487 +0000
 @@ -547,4 +547,8 @@
  #endif
  #endif

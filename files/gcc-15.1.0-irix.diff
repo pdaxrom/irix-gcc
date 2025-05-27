@@ -915,10 +915,10 @@ diff -Nur gcc-15.1.0/gcc/dwarf2cfi.cc gcc-15.1.0-irix/gcc/dwarf2cfi.cc
        if (emit_cfi)
  	add_cfi_restore (regno);
        update_row_reg_save (cur_row, regno, NULL);
-+ /*     if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
-+	&& regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
-+	&& regno != DWARF_FRAME_RETURN_COLUMN)
-+	  reg_save (DWARF_FRAME_RETURN_COLUMN, regno, NULL); */
++      if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
++	  && regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
++	  && regno != DWARF_FRAME_RETURN_COLUMN)
++	 reg_save (DWARF_FRAME_RETURN_COLUMN, dwf_cfa_reg(reg), NULL);
      }
    else
      {
@@ -926,10 +926,10 @@ diff -Nur gcc-15.1.0/gcc/dwarf2cfi.cc gcc-15.1.0-irix/gcc/dwarf2cfi.cc
  	  if (emit_cfi)
  	    add_cfi_restore (regno);
  	  update_row_reg_save (cur_row, regno, NULL);
-+ /*         if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
-+	    && regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
-+	    && regno != DWARF_FRAME_RETURN_COLUMN)
-+	      reg_save (DWARF_FRAME_RETURN_COLUMN, regno, NULL); */
++	  if (REG_P (INCOMING_RETURN_ADDR_RTX) // Bootstrap fix
++	     && regno == dwf_regno (INCOMING_RETURN_ADDR_RTX)
++	     && regno != DWARF_FRAME_RETURN_COLUMN)
++	    reg_save (DWARF_FRAME_RETURN_COLUMN, dwf_cfa_reg(reg), NULL);
  	}
      }
  }

@@ -1,6 +1,6 @@
-diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix-n32/gcc/config/mips/iris6.h
---- gcc-15.1.0/gcc/config/mips/iris6.h	2025-05-20 15:24:25.935683963 +0000
-+++ gcc-15.1.0-irix-n32/gcc/config/mips/iris6.h	2025-05-20 15:27:16.220989401 +0000
+diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix/gcc/config/mips/iris6.h
+--- gcc-15.1.0/gcc/config/mips/iris6.h	2025-06-25 05:44:27.447031094 +0000
++++ gcc-15.1.0-irix/gcc/config/mips/iris6.h	2025-06-25 05:43:26.069346826 +0000
 @@ -25,13 +25,13 @@
  
  /* Default to -mabi=n32 and -mips3.  */
@@ -16,4 +16,4 @@ diff -Nur gcc-15.1.0/gcc/config/mips/iris6.h gcc-15.1.0-irix-n32/gcc/config/mips
 +  "%{!mabi=*: -mabi=n32}", 			\
    "%{mabi=32: %{!mips*: %{!march*: -mips2}}}", 	\
    "%{mabi=n32: %{!mips*: %{!march*: -mips3}}}",	\
-   /* Configuration-independent MIPS rules.  */	\
+   "%{mabi=64: %{!mips*: %{!march*: -mips4}}}",	\

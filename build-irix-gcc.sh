@@ -94,7 +94,7 @@ fi
 
 OUT_FILENAME=$(basename ${TARGET_INST})
 
-tar zcf ${OUT_FILENAME}.tar.gz ${TARGET_INST}
+tar --owner 0 --group 0 -zcf ${OUT_FILENAME}.tar.gz ${TARGET_INST}
 
 test -d /out && cp -f ${OUT_FILENAME}.tar.gz /out
 

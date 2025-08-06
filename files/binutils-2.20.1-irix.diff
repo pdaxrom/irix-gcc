@@ -1,0 +1,63 @@
+diff -Nur binutils-2.20.1/binutils/dwarf.c binutils-2.20.1-irix/binutils/dwarf.c
+--- binutils-2.20.1/binutils/dwarf.c	2009-09-14 11:43:26.000000000 +0000
++++ binutils-2.20.1-irix/binutils/dwarf.c	2025-07-20 19:52:12.130765592 +0000
+@@ -52,7 +52,7 @@
+ int do_debug_macinfo;
+ int do_debug_str;
+ int do_debug_loc;
+-int do_wide;
++int do_wide; //
+ 
+ /* Values for do_debug_lines.  */
+ #define FLAG_DEBUG_LINES_RAW	 1
+diff -Nur binutils-2.20.1/binutils/readelf.c binutils-2.20.1-irix/binutils/readelf.c
+--- binutils-2.20.1/binutils/readelf.c	2010-01-14 10:48:23.000000000 +0000
++++ binutils-2.20.1-irix/binutils/readelf.c	2025-07-20 19:55:47.211581091 +0000
+@@ -149,7 +149,7 @@
+ #include "filenames.h"
+ 
+ char * program_name = "readelf";
+-int do_wide;
++extern int do_wide;
+ static long archive_file_offset;
+ static unsigned long archive_file_size;
+ static unsigned long dynamic_addr;
+diff -Nur binutils-2.20.1/gas/dwarf2dbg.h binutils-2.20.1-irix/gas/dwarf2dbg.h
+--- binutils-2.20.1/gas/dwarf2dbg.h	2009-09-14 11:43:26.000000000 +0000
++++ binutils-2.20.1-irix/gas/dwarf2dbg.h	2025-07-20 19:55:18.604009255 +0000
+@@ -83,12 +83,12 @@
+ 
+ /* True when we've seen a .loc directive recently.  Used to avoid
+    doing work when there's nothing to do.  */
+-extern bfd_boolean dwarf2_loc_directive_seen;
++/* extern bfd_boolean dwarf2_loc_directive_seen; */
+ 
+ /* True when we're supposed to set the basic block mark whenever a label
+    is seen.  Unless the target is doing Something Weird, just call 
+    dwarf2_emit_label.  */
+-extern bfd_boolean dwarf2_loc_mark_labels;
++/* extern bfd_boolean dwarf2_loc_mark_labels; */
+ 
+ extern void dwarf2_finish (void);
+ 
+diff -Nur binutils-2.20.1/intl/dcigettext.c binutils-2.20.1-irix/intl/dcigettext.c
+--- binutils-2.20.1/intl/dcigettext.c	2006-05-22 15:30:13.000000000 +0000
++++ binutils-2.20.1-irix/intl/dcigettext.c	2025-07-20 19:54:39.348852527 +0000
+@@ -148,7 +148,7 @@
+ char *getwd ();
+ #  define getcwd(buf, max) getwd (buf)
+ # else
+-char *getcwd ();
++/*char *getcwd ();*/
+ # endif
+ # ifndef HAVE_STPCPY
+ static char *stpcpy PARAMS ((char *dest, const char *src));
+diff -Nur binutils-2.20.1/irix-conf.sh binutils-2.20.1-irix/irix-conf.sh
+--- binutils-2.20.1/irix-conf.sh	1970-01-01 00:00:00.000000000 +0000
++++ binutils-2.20.1-irix/irix-conf.sh	2025-07-20 19:54:39.348852527 +0000
+@@ -0,0 +1,5 @@
++Cross:
++../configure --prefix=/opt/cross-irix5-new --target=mips-sgi-irix5 --without-nls --disable-werror --with-sysroot=/opt/cross-irix5-new/sysroot --disable-pgo-build --enable-lto=no --disable-plugins
++
++Native:
++../configure --prefix=/opt/dev-irix5 --target=mips-sgi-irix5 --host=mips-sgi-irix5 -build=x86_64-linux-gnu --without-nls --disable-werror

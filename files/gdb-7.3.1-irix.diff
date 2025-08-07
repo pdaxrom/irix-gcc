@@ -1,6 +1,6 @@
 diff -Nur gdb-7.3.1/bfd/bfdio.c gdb-7.3.1-irix/bfd/bfdio.c
---- gdb-7.3.1/bfd/bfdio.c	2010-06-09 13:28:31.000000000 +0000
-+++ gdb-7.3.1-irix/bfd/bfdio.c	2025-05-24 15:06:43.772148866 +0000
+--- gdb-7.3.1/bfd/bfdio.c	2010-06-09 18:28:31.000000000 +0500
++++ gdb-7.3.1-irix/bfd/bfdio.c	2025-08-06 17:27:25.898597899 +0400
 @@ -577,7 +577,7 @@
  {
    struct bfd_in_memory *bim = (struct bfd_in_memory *) abfd->iostream;
@@ -10,9 +10,22 @@ diff -Nur gdb-7.3.1/bfd/bfdio.c gdb-7.3.1-irix/bfd/bfdio.c
    statbuf->st_size = bim->size;
  
    return 0;
+diff -Nur gdb-7.3.1/config.guess gdb-7.3.1-irix/config.guess
+--- gdb-7.3.1/config.guess	2011-03-18 21:44:45.000000000 +0400
++++ gdb-7.3.1-irix/config.guess	2025-08-07 14:41:11.539184583 +0400
+@@ -977,6 +977,9 @@
+     vax:Linux:*:*)
+ 	echo ${UNAME_MACHINE}-dec-linux-gnu
+ 	exit ;;
++    aarch64:Linux:*:*)
++	echo aarch64-unknown-linux-gnu
++	exit ;;
+     x86_64:Linux:*:*)
+ 	echo x86_64-unknown-linux-gnu
+ 	exit ;;
 diff -Nur gdb-7.3.1/gdb/irix5-nat.c gdb-7.3.1-irix/gdb/irix5-nat.c
---- gdb-7.3.1/gdb/irix5-nat.c	2011-01-09 03:08:57.000000000 +0000
-+++ gdb-7.3.1-irix/gdb/irix5-nat.c	2025-05-24 15:14:10.821442886 +0000
+--- gdb-7.3.1/gdb/irix5-nat.c	2011-01-09 07:08:57.000000000 +0400
++++ gdb-7.3.1-irix/gdb/irix5-nat.c	2025-08-06 17:27:25.898714233 +0400
 @@ -151,7 +151,7 @@
  
    for (regi = 0; regi < 32; regi++)
@@ -50,8 +63,8 @@ diff -Nur gdb-7.3.1/gdb/irix5-nat.c gdb-7.3.1-irix/gdb/irix5-nat.c
  }
  
 diff -Nur gdb-7.3.1/libiberty/pex-unix.c gdb-7.3.1-irix/libiberty/pex-unix.c
---- gdb-7.3.1/libiberty/pex-unix.c	2011-01-03 21:05:58.000000000 +0000
-+++ gdb-7.3.1-irix/libiberty/pex-unix.c	2025-05-24 15:03:16.734889730 +0000
+--- gdb-7.3.1/libiberty/pex-unix.c	2011-01-04 01:05:58.000000000 +0400
++++ gdb-7.3.1-irix/libiberty/pex-unix.c	2025-08-06 17:27:25.898816608 +0400
 @@ -305,7 +305,7 @@
  				 int, int, int, int,
  				 const char **, int *);
@@ -71,8 +84,8 @@ diff -Nur gdb-7.3.1/libiberty/pex-unix.c gdb-7.3.1-irix/libiberty/pex-unix.c
  	       struct pex_time *time, int done, const char **errmsg,
  	       int *err)
 diff -Nur gdb-7.3.1/readline/display.c gdb-7.3.1-irix/readline/display.c
---- gdb-7.3.1/readline/display.c	2008-03-24 12:59:51.000000000 +0000
-+++ gdb-7.3.1-irix/readline/display.c	2025-05-24 15:11:19.786150329 +0000
+--- gdb-7.3.1/readline/display.c	2008-03-24 16:59:51.000000000 +0400
++++ gdb-7.3.1-irix/readline/display.c	2025-08-06 17:27:25.898999400 +0400
 @@ -442,7 +442,10 @@
        inv_lbreaks[0] = vis_lbreaks[0] = 0;
      }
@@ -86,8 +99,8 @@ diff -Nur gdb-7.3.1/readline/display.c gdb-7.3.1-irix/readline/display.c
  void
  rl_redisplay ()
 diff -Nur gdb-7.3.1/sim/common/sim-arange.c gdb-7.3.1-irix/sim/common/sim-arange.c
---- gdb-7.3.1/sim/common/sim-arange.c	2011-01-01 15:33:56.000000000 +0000
-+++ gdb-7.3.1-irix/sim/common/sim-arange.c	2025-05-24 15:12:11.238946033 +0000
+--- gdb-7.3.1/sim/common/sim-arange.c	2011-01-01 19:33:56.000000000 +0400
++++ gdb-7.3.1-irix/sim/common/sim-arange.c	2025-08-06 17:27:25.899148525 +0400
 @@ -285,7 +285,7 @@
  
  #if DEFINE_INLINE_P
@@ -98,8 +111,8 @@ diff -Nur gdb-7.3.1/sim/common/sim-arange.c gdb-7.3.1-irix/sim/common/sim-arange
  {
    ADDR_RANGE_TREE *t = ar->range_tree;
 diff -Nur gdb-7.3.1/sim/common/sim-arange.h gdb-7.3.1-irix/sim/common/sim-arange.h
---- gdb-7.3.1/sim/common/sim-arange.h	2011-01-01 15:33:56.000000000 +0000
-+++ gdb-7.3.1-irix/sim/common/sim-arange.h	2025-05-24 15:12:01.830434833 +0000
+--- gdb-7.3.1/sim/common/sim-arange.h	2011-01-01 19:33:56.000000000 +0400
++++ gdb-7.3.1-irix/sim/common/sim-arange.h	2025-08-06 17:27:25.899197983 +0400
 @@ -63,7 +63,7 @@
  
  /* Return non-zero if ADDR is in range AR, traversing the entire tree.

@@ -1,0 +1,13 @@
+diff -Nur binutils-2.20.1/config.guess binutils-2.20.1-irix/config.guess
+--- binutils-2.20.1/config.guess	2009-08-17 09:10:29.000000000 +0500
++++ binutils-2.20.1-irix/config.guess	2025-08-06 12:50:10.691619659 +0400
+@@ -960,6 +960,9 @@
+     vax:Linux:*:*)
+ 	echo ${UNAME_MACHINE}-dec-linux-gnu
+ 	exit ;;
++    aarch64:Linux:*:*)
++	echo aarch64-unknown-linux-gnu
++	exit ;;
+     x86_64:Linux:*:*)
+ 	echo x86_64-unknown-linux-gnu
+ 	exit ;;

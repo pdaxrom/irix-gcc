@@ -2,8 +2,8 @@ TARGET_INST=/opt/irix-gcc-n32
 
 TARGET_TRIPLET=mips-sgi-irix6n32
 
-BINUTILS_VERSION=2.19.1
-BINUTILS_PATCHES="files/binutils-${BINUTILS_VERSION}-irix.diff"
+BINUTILS_VERSION=2.20.1
+BINUTILS_PATCHES="files/binutils-${BINUTILS_VERSION}-irix.diff files/binutils-${BINUTILS_VERSION}-arm64-build-fix.diff"
 BINUTILS_CONF_OPTS="--enable-lto=no --enable-multilib --libdir=${TARGET_INST}/lib32"
 BINUTILS_EXT=bz2
 

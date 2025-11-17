@@ -48,3 +48,19 @@ To build for ABI N32, use config-n32.inc for Irix 6.2 or config-irix65.inc for I
 and
 
 ```bash build-irix-gcc.sh config-irix65.inc```
+
+### Other GCC Versions
+
+A list of other GCC versions can be found at: https://tech-pubs.net/wiki/index.php/GCC
+
+Of note, GCC is included with the following software distributions:
+
+tgcware 5.3: 3.4.6 and 4.5.3
+
+tgcware 6.2: 3.4.6 -> 4.5.2
+
+nekoware 6.5.22+ (historical): 4.7.1
+
+sgug-rse: 9.2.0
+
+Raion [unofficial](https://contrib.irixnet.org/raion/tardists/neko_gcc6.tardist): 6.5.0 

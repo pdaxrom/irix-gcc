@@ -7,7 +7,7 @@ BINUTILS_PATCHES="files/binutils-${BINUTILS_VERSION}-irix.diff files/binutils-${
 BINUTILS_CONF_OPTS="--enable-lto=no --enable-multilib --libdir=${TARGET_INST}/lib32"
 BINUTILS_EXT=bz2
 
-GCC_VERSION=15.1.0
+GCC_VERSION=15.2.0
 GCC_PATCHES="files/gcc-${GCC_VERSION}-irix.diff files/gcc-${GCC_VERSION}-irix-n32.diff"
 #GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror --enable-maintainer-mode"
 GCC_CONF_OPTS="--disable-libssp --enable-languages=c,c++ --disable-lto --disable-pgo-build --disable-plugins --enable-multilib --disable-werror"
